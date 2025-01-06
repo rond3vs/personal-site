@@ -1,0 +1,49 @@
+---
+import { type CollectionEntry, getCollection } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import BackToPrev from "@components/BackToPrev.astro";
+import Link from "@components/Link.astro";
+
+export async function getStaticPaths() {
+  const businesses = await getCollection("businesses");
+  return businesses.map((business) => ({
+    params: { slug: business.slug },
+    props: business,
+  }));
+}
+type Props = CollectionEntry<"businesses">;
+
+const business = Astro.props;
+const { Content } = await business.render();
+---
+
+<PageLayout title={business.data.title} description={business.data.description}>
+  <Container>
+    <div class="animate">
+      <BackToPrev href="/businesses">
+        Back to businesses
+      </BackToPrev>
+    </div>
+    <div class="space-y-1 my-10">
+      <div class="animate text-2xl font-semibold text-black dark:text-white">
+        {business.data.title}
+      </div>
+      <div class="animate flex items-center gap-1.5">
+        {business.data.website && (
+          <Link href={business.data.website} external>
+            {business.data.website}
+          </Link>
+        )}
+        </div>
+      <div>
+        <p>{business.data.description}</p>
+        <p>Monthly Profit: ${business.data.revenue}</p>
+        <p>Employees: {business.data.employees}</p>
+      </div>
+    </div>
+    <article class="animate">
+      <Content />
+    </article>
+  </Container>
+</PageLayout>

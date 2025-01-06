@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 
 type Props = {
-  entry: CollectionEntry<"blog"> | CollectionEntry<"projects">;
+  entry: CollectionEntry<"blog"> | CollectionEntry<"projects"> | CollectionEntry<"businesses">;
 }
 
 const { entry } = Astro.props;
@@ -16,6 +16,16 @@ const { entry } = Astro.props;
     <div class="text-sm">
       {entry.data.description}
     </div>
+    {entry.collection === "businesses" && (
+      <>
+        <div class="text-sm font-semibold opacity-75">
+          Monthly Profit: ${entry.data.revenue}
+        </div>
+        <div class="text-sm font-semibold opacity-75">
+          Employees: {entry.data.employees}
+        </div>
+      </>
+    )}
   </div>
   <svg 
     xmlns="http://www.w3.org/2000/svg" 
