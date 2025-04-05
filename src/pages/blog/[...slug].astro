@@ -41,6 +41,9 @@ const { Content } = await post.render();
       <div class="animate text-2xl font-semibold text-black dark:text-white">
         {post.data.title}
       </div>
+      <div class="animate flex items-center gap-1">
+        {post.data.description}
+      </div>
     </div>
     <article class="animate">
       <Content />
