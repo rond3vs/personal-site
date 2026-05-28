@@ -646,31 +646,6 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     margin-top: var(--gap);
   }
 
-  /* Sticky stacking: each card/section pins a fixed step below the previous
-     one (a fanned deck), and they release in reverse as you scroll back up.
-     --si is the stack index; 56px is the per-card peek. The nav's higher
-     z-index keeps it above the stack. */
-  .card,
-  .hero,
-  .section,
-  .apps-grid,
-  .now-grid {
-    position: sticky;
-    top: calc(62px + var(--si, 0) * 56px);
-  }
-
-  /* assign the stack index — home cards sit in separate panels… */
-  .panel--info > :nth-child(1)     { --si: 0; }   /* profile */
-  .panel--info > :nth-child(2)     { --si: 1; }   /* "more about me" bar */
-  .panel--apps .apps-grid          { --si: 2; }
-  .panel--contact > .card--contact { --si: 0; }
-
-  /* …detail-page cards are direct children of .page-wrap */
-  .page-wrap > :nth-child(1) { --si: 0; }
-  .page-wrap > :nth-child(2) { --si: 1; }
-  .page-wrap > :nth-child(3) { --si: 2; }
-  .page-wrap > :nth-child(4) { --si: 3; }
-
   /* uniform 8px rounding on every box on mobile (incl. the nav) */
   .bar,
   .card,
@@ -701,17 +676,16 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .bar--apps { display: none; }
   .card--foot { display: none; }
 
-  /* show only the panels for the active view. display:contents promotes the
-     cards to direct children of .app so they can sticky-stack across the page
-     (instead of being clamped inside each panel box). */
+  /* show only the panels for the active view */
   .panel { display: none; }
   .app:has(#view-info:checked)    .panel--info,
   .app:has(#view-info:checked)    .panel--apps,
-  .app:has(#view-contact:checked) .panel--contact { display: contents; }
+  .app:has(#view-contact:checked) .panel--contact { display: flex; }
 
   /* even 2-column launcher; cards size to content (a touch larger),
      no inner scroll — the whole page scrolls if everything doesn't fit */
   .apps-grid {
+    flex: 1;                       /* fill the panel width */
     grid-template-columns: 1fr 1fr;
     grid-template-areas: none;
     grid-template-rows: none;
