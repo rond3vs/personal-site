@@ -1,169 +1,157 @@
 ---
-import { getCollection } from "astro:content";
-import Container from "@components/Container.astro";
-import PageLayout from "@layouts/PageLayout.astro";
-import ArrowCard from "@components/ArrowCard.astro";
-import Link from "@components/Link.astro";
-// import { dateRange } from "@lib/utils";
-import { SITE, HOME, SOCIALS } from "@consts";
-
-const blog = (await getCollection("blog"))
-  .filter(post => !post.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0,SITE.NUM_POSTS_ON_HOMEPAGE);
-
-const projects = (await getCollection("projects"))
-  .filter(project => !project.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0,SITE.NUM_PROJECTS_ON_HOMEPAGE);
-
-  const businesses = (await getCollection("businesses"))
-  
-  .slice(0,SITE.NUM_BUSINESSES_ON_HOMEPAGE);
-
-// const allwork = (await getCollection("work"))
-//   .sort((a, b) => new Date(b.data.dateStart).valueOf() - new Date(a.data.dateStart).valueOf())
-//   .slice(0,SITE.NUM_WORKS_ON_HOMEPAGE);
-
-// const work = await Promise.all(
-//   allwork.map(async (item) => {
-//     const { Content } = await item.render();
-//     return { ...item, Content };
-//   }) 
-// );
-
-
+import Base from '../layouts/Base.astro';
+import BrandMark from '../components/BrandMark.astro';
 ---
 
-<PageLayout title={HOME.TITLE} description={HOME.DESCRIPTION}>
-  <Container>
-    <h4 class="animate font-semibold text-black dark:text-white">
-      Hi, I'm LaRon <span class="text-xl">👋🏻</span> 
-    </h4>
-    <div class="space-y-16">
-      <section>
-        <article class="space-y-4">
-          <p class="animate">
-           28 Going through life. Here's my website all about me. 
+<Base title="LaRon — Portfolio">
+  <!-- CSS-only site (no JavaScript): hidden radios drive the Info/Contact
+       tabs via :has(). data-view scopes the page root. -->
+  <div class="app" data-view>
+    <input class="vh" type="radio" name="view" id="view-info" checked aria-label="Show info" />
+    <input class="vh" type="radio" name="view" id="view-contact" aria-label="Show contact" />
+
+    <!-- ============ TOP BARS ============ -->
+    <header class="bar bar--main">
+      <a class="brand" href="/" aria-label="Home"><BrandMark /></a>
+      <nav class="tabset" aria-label="Sections">
+        <label class="tab" for="view-info"><span>Info</span><span class="ico" aria-hidden="true"></span></label>
+        <label class="tab" for="view-contact"><span>Contact</span><span class="ico" aria-hidden="true"></span></label>
+      </nav>
+    </header>
+
+    <header class="bar bar--apps">
+      <span class="apps-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18">
+          <rect x="3" y="3" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="14" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </span>
+      <span>Apps</span>
+    </header>
+
+    <!-- ============ PANELS ============ -->
+    <main class="panels">
+
+      <!-- ---------- INFO ---------- -->
+      <section class="panel panel--info" data-panel="info">
+        <div class="card card--profile">
+          <div class="profile-top">
+            <div class="avatar" role="img" aria-label="LaRon"></div>
+            <span class="clock" aria-label="Age">28</span>
+          </div>
+          <p class="bio">
+            Hi, I'm LaRon 👋🏻 — 28, going through life and building things along the
+            way. This is my website, all about me: the projects I'm shipping, the
+            businesses I'm growing, and a few Ronny Thoughts in between.
           </p>
+        </div>
 
-        </article>
+        <a class="card card--more" href="/about">
+          <span class="more-pill">More about me</span>
+          <span class="app-arrow" aria-hidden="true">↗</span>
+        </a>
+
+        <div class="card card--foot">
+          <a class="email" href="mailto:rond3vs@gmail.com">
+            <span>rond3vs@gmail.com</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+            </svg>
+          </a>
+          <div class="socials">
+            <a href="https://twitter.com/markhorn_dev" class="soc" aria-label="Twitter/X" target="_blank" rel="noopener">X</a>
+            <a href="https://github.com/markhorn-dev" class="soc" aria-label="GitHub" target="_blank" rel="noopener">GH</a>
+            <a href="https://www.linkedin.com/in/markhorn-dev" class="soc" aria-label="LinkedIn" target="_blank" rel="noopener">in</a>
+          </div>
+        </div>
       </section>
 
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            Latest Ronny Thoughts
-          </h5>
-          <Link href="/blog">
-            See all Ronny Thoughts
-          </Link>
+      <!-- ---------- CONTACT ---------- -->
+      <section class="panel panel--contact" data-panel="contact">
+        <div class="card card--contact">
+          <p class="contact-kicker">Let's connect</p>
+          <h2 class="contact-head">Want to get in touch, or just say hi?</h2>
+          <a class="email email--lg" href="mailto:rond3vs@gmail.com">
+            <span>rond3vs@gmail.com</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 17 17 7"/><path d="M8 7h9v9"/>
+            </svg>
+          </a>
+          <ul class="contact-links">
+            <li><a href="https://twitter.com/markhorn_dev" target="_blank" rel="noopener">Twitter / X <span>↗</span></a></li>
+            <li><a href="https://github.com/markhorn-dev" target="_blank" rel="noopener">GitHub <span>↗</span></a></li>
+            <li><a href="https://www.linkedin.com/in/markhorn-dev" target="_blank" rel="noopener">LinkedIn <span>↗</span></a></li>
+          </ul>
+          <p class="contact-foot">Reach out on social or drop me an email — always happy to chat.</p>
         </div>
-        <ul class="flex flex-col gap-4">
-          {blog.map(post => (
-            <li>
-              <ArrowCard entry={post} />
-            </li>
-          ))}
-        </ul>
       </section>
 
-      
+      <!-- ---------- APPS ---------- -->
+      <section class="panel panel--apps" data-panel="apps">
+        <div class="apps-grid">
 
+          <a class="app app--projects" href="/projects">
+            <span class="app-ico app-ico--projects">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+              </svg>
+            </span>
+            <span class="app-meta">
+              <span class="app-title">Projects</span>
+              <span class="app-sub">Things I've built with Astro</span>
+            </span>
+            <span class="app-arrow" aria-hidden="true">↗</span>
+          </a>
 
-      <!-- <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            Work Experience
-          </h5>
-          <Link href="/work">
-            See all work
-          </Link>
+          <a class="app app--blog" href="/blog">
+            <span class="app-ico app-ico--blog">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h12l4 4v12H4z"/><path d="M8 9h6M8 13h8M8 17h5"/>
+              </svg>
+            </span>
+            <span class="app-meta">
+              <span class="app-title">Ronny Thoughts</span>
+              <span class="app-sub">Reflections on life &amp; building</span>
+            </span>
+            <span class="app-arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <a class="app app--feature app--business" href="/businesses">
+            <svg class="feature-mark" viewBox="0 0 120 120" aria-hidden="true">
+              <g fill="none" stroke="rgba(255,255,255,.85)" stroke-width="6" stroke-linejoin="round">
+                <path d="M30 30 50 18 50 78 30 90 Z"/>
+                <path d="M50 18 70 30 70 90 50 78 Z"/>
+                <path d="M70 30 90 18 90 78 70 90 Z"/>
+              </g>
+            </svg>
+            <span class="app-meta">
+              <span class="app-eyebrow">Featured</span>
+              <span class="app-title">Businesses</span>
+              <span class="app-sub">Things I'm building &amp; running</span>
+            </span>
+            <span class="app-arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <a class="app app--current" href="/currently">
+            <span class="app-ico app-ico--current">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l2.2 5.5L20 10l-4.5 3.4L17 19l-5-3-5 3 1.5-5.6L4 10l5.8-1.5z"/>
+              </svg>
+            </span>
+            <span class="app-meta">
+              <span class="app-eyebrow">Currently into</span>
+              <span class="app-title">Coming soon</span>
+              <span class="app-sub">What I'm into lately — TBD</span>
+            </span>
+            <span class="app-arrow" aria-hidden="true">↗</span>
+          </a>
+
         </div>
-        <ul class="flex flex-col space-y-4">
-          {work.map(entry => (
-            <li>
-              <div class="text-sm opacity-75">
-                {dateRange(entry.data.dateStart, entry.data.dateEnd)}
-              </div>
-              <div class="font-semibold text-black dark:text-white">
-                {entry.data.company}
-              </div>
-              <div class="text-sm opacity-75">
-                {entry.data.role}
-              </div>
-              <article>
-                <entry.Content />
-              </article>
-            </li>
-          ))}
-        </ul>
-      </section> -->
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            Recent projects
-          </h5>
-          <Link href="/projects">
-            See all projects
-          </Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {projects.map(project => (
-            <li>
-              <ArrowCard entry={project} />
-            </li>
-          ))}
-        </ul>
       </section>
 
-
-
-      <section class="animate space-y-6">
-        <div class="flex flex-wrap gap-y-2 items-center justify-between">
-          <h5 class="font-semibold text-black dark:text-white">
-            My Businesses
-          </h5>
-          <Link href="/businesses">
-            See all my businesses
-          </Link>
-        </div>
-        <ul class="flex flex-col gap-4">
-          {businesses.map(entry => (
-            <li>
-              <ArrowCard entry={entry} />
-            </li>
-          ))}
-        </ul>
-      </section> 
-
-      <section class="animate space-y-4">
-        <h5 class="font-semibold text-black dark:text-white">
-          Let's Connect
-        </h5>
-        <article>
-          <p>
-            If you want to get in touch with me about something or just to say hi,
-            reach out on social media or send me an email.
-          </p>
-        </article>
-        <ul class="flex flex-wrap gap-2">
-          {SOCIALS.map(SOCIAL => (
-            <li class="flex gap-x-2 text-nowrap">
-              <Link href={SOCIAL.HREF} external aria-label={`${SITE.NAME} on ${SOCIAL.NAME}`}>
-                {SOCIAL.NAME}
-              </Link>
-              {"/"}
-            </li>
-          ))}
-          <li class="line-clamp-1">
-            <Link href={`mailto:${SITE.EMAIL}`} aria-label={`Email ${SITE.NAME}`}>
-              {SITE.EMAIL}
-            </Link>
-          </li>
-        </ul>
-      </section>
-    </div>
-  </Container>
-</PageLayout>
+    </main>
+  </div>
+</Base>

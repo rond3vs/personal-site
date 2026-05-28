@@ -1,0 +1,33 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<PageLayout title={`${entry.data.title} — LaRon`} back="/projects" backLabel="← Projects">
+  <section class="hero hero--projects">
+    <span class="app-ico app-ico--projects">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+    </span>
+    {entry.data.tag && <span class="hero-eyebrow">{entry.data.tag}</span>}
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.description}</p>
+  </section>
+
+  <section class="section">
+    <div class="prose"><Content /></div>
+    {entry.data.url && (
+      <p style="margin-top:18px;"><a class="more-pill" href={entry.data.url} target="_blank" rel="noopener">Visit project ↗</a></p>
+    )}
+  </section>
+</PageLayout>

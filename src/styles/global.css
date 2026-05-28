@@ -1,73 +1,742 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ============================================================
+   LaRon — portfolio styles
+   ------------------------------------------------------------
+   1. TOKENS & RESET
+   2. SHARED SURFACES   (the bordered "card" frame on every box)
+   3. LAYOUT            (app shell + top bars)
+   4. COMPONENTS        (profile, footer, more-bar, contact, apps)
+   5. PAGES             (detail pages: hero, sections, entries, prose)
+   6. VIEW TRANSITIONS
+   7. RESPONSIVE
 
-html {
-  overflow-y: scroll;
-  color-scheme: light;
+   Theme: light "ASCII / terminal" look — monospace type, square
+   corners, hard borders, a soft drop shadow, and text glyphs in
+   place of icons. The override layers have been merged into the
+   base rules, so each thing is styled in one place.
+   ============================================================ */
+
+
+/* ============================================================
+   1. TOKENS & RESET
+   ============================================================ */
+:root {
+  --bg: #e9e9e9;
+  --card: #ffffff;
+  --card-soft: #f3f3f3;
+  --ink: #161616;
+  --ink-soft: #9a9a9a;
+  --accent: #206a5d;
+  --line: #1c1c1c;          /* hard border colour */
+  --radius: 0;              /* square corners (ASCII look) */
+  --radius-sm: 0;
+  --gap: 12px;
+  --bar-h: 60px;
+  --font: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
-html.dark {
-  color-scheme: dark;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
-html,
+html { -webkit-text-size-adjust: 100%; }
+
 body {
-  @apply size-full;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  @apply font-sans antialiased;
-  @apply flex flex-col;
-  @apply bg-stone-100 dark:bg-stone-900;
-  @apply text-black/50 dark:text-white/75;
+button { font: inherit; color: inherit; cursor: pointer; border: none; background: none; }
+a { color: inherit; text-decoration: none; }
+svg { display: block; }
+
+/* visually-hidden controls (the radios that drive the CSS-only tabs) */
+.vh {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 
-header {
-  @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-stone-100/75 dark:bg-stone-900;
-  @apply backdrop-blur-sm ;
+
+/* ============================================================
+   2. SHARED SURFACES
+   Every "box" — bars, cards, detail-page hero/sections, app tiles —
+   shares the same bordered, soft-shadowed frame.
+   ============================================================ */
+.bar,
+.card,
+.section,
+.hero,
+.apps-grid > .app {
+  border: 1.5px solid var(--line);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+              rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+              rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
 }
 
-main {
-  @apply flex-1 py-32;
+
+/* ============================================================
+   3. LAYOUT — app shell + top bars
+   ============================================================ */
+.app[data-view] {
+  padding: var(--gap);
+  display: grid;
+  gap: var(--gap);
+  min-height: 100vh;
 }
 
-footer {
-  @apply py-5 text-sm;
+/* ---- bars ---- */
+.bar {
+  background: var(--card);
+  height: var(--bar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
 }
 
-article {
-  @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
-  @apply prose-headings:font-semibold prose-p:font-serif;
-  @apply prose-headings:text-black prose-headings:dark:text-white;
+.bar--apps { font-weight: 500; font-size: 15px; }
+.apps-mark { display: grid; place-items: center; width: 30px; height: 30px; }
+
+/* ---- brand mark ---- */
+.brand {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.brand:hover { background: var(--card-soft); }
+
+/* ---- tabs (CSS-only, driven by the hidden view radios) ---- */
+.tabset {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-@layer utilities {
-  article a {
-    @apply font-sans text-current underline underline-offset-2;
-    @apply decoration-black/15 dark:decoration-white/30;
-    @apply transition-colors duration-300 ease-in-out;
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease, color .15s ease;
+}
+.tab:hover { background: #e3e3e3; }
+
+/* the +/- glyph: two bars; the active tab collapses the vertical one (→ minus) */
+.tab .ico {
+  position: relative;
+  width: 13px; height: 13px;
+  flex-shrink: 0;
+}
+.tab .ico::before,
+.tab .ico::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: currentColor;
+  border-radius: 2px;
+}
+.tab .ico::before { width: 13px; height: 2px; }
+.tab .ico::after  { width: 2px; height: 13px; transition: transform .2s ease, opacity .2s ease; }
+
+.app:has(#view-info:checked)    .tab[for="view-info"]    .ico::after,
+.app:has(#view-contact:checked) .tab[for="view-contact"] .ico::after {
+  transform: translate(-50%, -50%) scaleY(0);
+  opacity: 0;
+}
+
+.app:has(#view-info:checked)    .tab[for="view-info"],
+.app:has(#view-contact:checked) .tab[for="view-contact"] {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--line);
+}
+
+
+/* ============================================================
+   4. COMPONENTS
+   ============================================================ */
+.panels { display: contents; }   /* panels participate in the page grid */
+.panel { min-width: 0; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+
+/* ---- notch labels ("[ info ]" etc. sitting on the top border) ---- */
+.card--profile,
+.card--foot,
+.card--more { position: relative; }
+
+.card--profile::before,
+.card--foot::before,
+.card--more::before {
+  position: absolute;
+  top: 0; left: 18px;
+  transform: translateY(-50%);
+  background: var(--bg);
+  padding: 0 8px;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.card--profile::before { content: "[ info ]"; }
+.card--foot::before    { content: "[ contact ]"; }
+.card--more::before    { content: "[ about ]"; }
+
+/* ---- profile (intro card) ---- */
+.panel--info { display: flex; flex-direction: column; gap: var(--gap); }
+.card--profile { padding-bottom: 26px; }
+
+.profile-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+/* avatar drawn as a small ASCII face */
+.avatar {
+  width: 84px; height: 84px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  font: 13px/1.18 var(--font);
+  white-space: pre;
+  text-align: center;
+}
+.avatar::before { content: ".----.\A|o  o|\A| <> |\A'----'"; }
+
+.clock {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.clock::before { content: "[ "; }
+.clock::after  { content: " ]"; }
+
+.bio {
+  font-size: clamp(18px, 1.4vw, 22px);
+  line-height: 1.45;
+  max-width: 38ch;
+}
+
+/* ---- footer (email + socials) ---- */
+.card--foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--accent);
+  color: var(--ink);
+  font-weight: 500;
+  transition: background .15s ease;
+}
+.email::before { content: "> "; color: var(--accent); }
+.email:hover { background: rgba(32, 106, 93, .08); }
+.email svg { color: var(--accent); }
+
+.socials { display: flex; gap: 8px; }
+.soc {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  transition: color .15s, background .15s;
+}
+.soc:hover { background: var(--accent); color: #fff; }
+
+/* ---- "More about me" bar (mirrors the footer) ---- */
+.card--more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+.more-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 16px;
+  border: 1.5px solid var(--accent);
+  color: var(--ink);
+  font-weight: 500;
+}
+.more-pill::before { content: "> "; color: var(--accent); }
+.card--more .app-arrow { position: static; color: var(--ink-soft); }
+.card--more:hover .more-pill { background: rgba(32, 106, 93, .08); }
+.card--more:hover .app-arrow { color: var(--ink); }
+
+/* ---- contact panel ---- */
+.panel--contact { display: flex; }
+
+.card--contact {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 30px;
+}
+.contact-kicker { color: var(--accent); font-weight: 600; }
+.contact-head {
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 600;
+  line-height: 1.1;
+  max-width: 16ch;
+}
+.email--lg { align-self: flex-start; font-size: 17px; padding: 12px 20px; }
+
+.contact-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+}
+.contact-links a {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 4px;
+  border-top: 1px solid #ececec;
+  font-size: 18px;
+  font-weight: 500;
+}
+.contact-links li:last-child a { border-bottom: 1px solid #ececec; }
+.contact-links a span { color: var(--ink-soft); }
+.contact-links a:hover { color: var(--accent); }
+.contact-foot { color: var(--ink-soft); font-size: 14px; margin-top: auto; }
+
+/* ---- apps launcher ---- */
+.apps-grid {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "projects blog"
+    "business business"
+    "current  current";
+  grid-template-rows: 1fr 1.25fr 1fr;
+  height: 100%;
+}
+.app--projects { grid-area: projects; }
+.app--blog     { grid-area: blog; }
+.app--business { grid-area: business; }
+.app--current  { grid-area: current; }
+
+.apps-grid > .app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  min-height: 150px;
+  overflow: hidden;
+  background: var(--card);
+  border-radius: var(--radius);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.apps-grid > .app:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--line);   /* hard offset shadow on hover */
+}
+.apps-grid > .app:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink); }
+
+/* app icons: bordered box with a text glyph (the svg is hidden) */
+.app-ico {
+  width: 54px; height: 54px;
+  flex-shrink: 0;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+}
+.app-ico svg { display: none; }
+.app-ico::before { font-size: 22px; line-height: 1; }
+.app-ico--projects::before { content: "#"; }
+.app-ico--blog::before     { content: "\00B6"; }   /* ¶ */
+.app-ico--about::before    { content: "@"; }
+.app-ico--current::before  { content: "*"; }
+
+.app-meta { display: flex; flex-direction: column; gap: 3px; }
+.app-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .7; }
+.app-title { font-size: 21px; font-weight: 600; }
+.app-title::before { content: "> "; color: var(--accent); }
+.app-sub { color: var(--ink-soft); font-size: 15px; }
+
+.app-eyebrow::before,
+.hero-eyebrow::before { content: "// "; }
+
+/* the corner arrow ("->") */
+.app-arrow {
+  position: absolute;
+  top: 20px; right: 22px;
+  font-size: 0;                 /* hides the literal ↗ in the markup */
+  color: var(--ink-soft);
+  transition: transform .18s ease, color .18s ease;
+}
+.app-arrow::before { content: "->"; font-size: 16px; letter-spacing: -1px; }
+
+/* featured tile (Businesses) — inverted dark block */
+.apps-grid > .app--feature { background: #0a0a0a; color: #fff; }
+.app--feature .app-sub { color: rgba(255, 255, 255, .6); }
+.app--feature .app-arrow { color: rgba(255, 255, 255, .55); }
+.app--feature:hover .app-arrow { color: #fff; }
+.app--feature::before {
+  content: "[ $ ]";
+  position: absolute;
+  top: 20px; left: 22px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.feature-mark { display: none; }   /* decorative svg replaced by the [ $ ] marker */
+
+
+/* ============================================================
+   5. PAGES — detail pages (projects / blog / businesses / about …)
+   ============================================================ */
+.page-shell {
+  padding: var(--gap);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.page-wrap {
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.back {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--line);
+  background: var(--card-soft);
+  font-weight: 500;
+  font-size: 15px;
+}
+.back:hover { background: #e3e3e3; }
+
+/* ---- hero ---- */
+.hero {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 38px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.hero .app-ico { width: 64px; height: 64px; }
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+}
+.hero h1 { font-size: clamp(30px, 4.4vw, 48px); font-weight: 600; line-height: 1.05; }
+.hero p { color: var(--ink-soft); font-size: 18px; line-height: 1.5; max-width: 48ch; }
+
+/* dark hero variant (Businesses) */
+.hero--business { background: #0a0a0a; color: #fff; }
+.hero--business .hero-eyebrow { color: #fff; opacity: .55; }
+.hero--business p { color: rgba(255, 255, 255, .6); }
+
+/* ---- sections ---- */
+.section {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 30px;
+}
+.section > h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.section > h2::before { content: "// "; }
+
+/* ---- entry list (collection items) ---- */
+.entry {
+  display: flex;
+  gap: 20px;
+  padding: 22px 0;
+  border-top: 1px solid #ececec;
+  align-items: flex-start;
+}
+.entry:first-of-type { border-top: none; padding-top: 8px; }
+
+/* thumbnails render as a monochrome hatch placeholder */
+.entry-thumb {
+  width: 88px; height: 88px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line);
+  background: repeating-linear-gradient(45deg, #e2e2e2, #e2e2e2 3px, #f2f2f2 3px, #f2f2f2 6px);
+}
+
+.entry-body { flex: 1; min-width: 0; }
+.entry-top { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+.entry-body h3 { font-size: 19px; font-weight: 600; }
+.entry-date { color: var(--ink-soft); font-size: 14px; white-space: nowrap; }
+.entry-body p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.5; margin-top: 6px; }
+
+.tag {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(32, 106, 93, .1);
+}
+
+/* ---- timeline (about page) ---- */
+.timeline { list-style: none; }
+.timeline li {
+  display: flex;
+  gap: 18px;
+  padding: 14px 0;
+  border-top: 1px solid #ececec;
+}
+.timeline li:first-child { border-top: none; }
+.timeline .yr {
+  width: 90px;
+  flex-shrink: 0;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+.timeline .role { font-weight: 500; }
+.timeline .role span { color: var(--ink-soft); font-weight: 400; }
+
+/* ---- prose (rendered markdown body of a collection entry) ---- */
+.prose { color: var(--ink); font-size: 17px; line-height: 1.6; max-width: 62ch; }
+.prose > * + * { margin-top: 1em; }
+.prose h2 { font-size: 20px; font-weight: 600; margin-top: 1.4em; text-transform: none; color: var(--ink); }
+.prose h3 { font-size: 18px; font-weight: 600; margin-top: 1.2em; }
+.prose a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.prose ul, .prose ol { padding-left: 1.2em; }
+.prose li { margin-top: .35em; }
+.prose code { font-family: var(--font); background: var(--card-soft); padding: 2px 6px; border: 1.5px solid var(--line); font-size: .9em; }
+.prose blockquote { border-left: 3px solid var(--accent); padding-left: 14px; color: var(--ink-soft); }
+
+
+/* ============================================================
+   6. VIEW TRANSITIONS (cross-document, no JS)
+   ============================================================ */
+@view-transition { navigation: auto; }
+
+/* full-page crossfade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .5s;
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+/* morphing elements glide between pages */
+::view-transition-group(*) {
+  animation-duration: .55s;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Morph each home tile into its page hero — DESKTOP ONLY.
+   On mobile the tiles live in a scrollable box, so morphing them
+   glitches; phones get the plain crossfade instead. */
+@media (min-width: 860px) {
+  .app--projects, .hero--projects { view-transition-name: vt-projects; }
+  .app--blog,     .hero--blog     { view-transition-name: vt-blog; }
+  .app--business, .hero--business { view-transition-name: vt-business; }
+  .card--more,    .hero--about    { view-transition-name: vt-about; }
+  .app--current,  .hero--current  { view-transition-name: vt-current; }
+}
+
+
+/* ============================================================
+   7. RESPONSIVE
+   ============================================================ */
+
+/* ----- MOBILE: viewport-locked home, tap to navigate ----- */
+@media (max-width: 859px) {
+  .app[data-view] {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;          /* the page itself never scrolls */
   }
-  article a:hover {
-    @apply text-black dark:text-white;
-    @apply decoration-black/25 dark:decoration-white/50;
+
+  /* top bar gets tighter */
+  .bar { padding: 0 10px; gap: 6px; height: 54px; }
+  .brand { width: 36px; height: 36px; }
+  .brand svg { width: 18px; height: 18px; }
+  .tabset { gap: 6px; margin-left: 0; }
+  .tab { padding: 6px 11px; gap: 6px; font-size: 13px; }
+  .tab .ico { width: 11px; height: 11px; }
+  .tab .ico::before { width: 11px; }
+  .tab .ico::after  { height: 11px; }
+
+  /* the Apps bar + contact footer don't show on the mobile home */
+  .bar--apps { display: none; }
+  .card--foot { display: none; }
+
+  /* show only the panels for the active view */
+  .panel { display: none; }
+  .app:has(#view-info:checked)    .panel--info,
+  .app:has(#view-info:checked)    .panel--apps,
+  .app:has(#view-contact:checked) .panel--contact { display: flex; }
+
+  /* intro keeps its size; apps/contact fill the rest and scroll inside */
+  .panel--info { flex: 0 0 auto; }
+  .panel--apps,
+  .panel--contact {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .panel--apps::-webkit-scrollbar,
+  .panel--contact::-webkit-scrollbar { display: none; }
+
+  /* even 2-column launcher; tiles keep a comfortable min height */
+  .apps-grid {
+    flex: 1;
+    height: auto;
+    min-height: 100%;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: none;
+    grid-template-rows: none;
+    grid-auto-rows: minmax(150px, 1fr);
+  }
+  .apps-grid > .app {
+    grid-area: auto;
+    grid-column: auto;
+    min-height: 150px;
+    padding: 16px;
+    gap: 10px;
+  }
+
+  /* profile */
+  .profile-top { flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+  .avatar { width: 72px; height: 72px; font-size: 12px; }
+  .clock { font-size: 15px; }
+  .bio {
+    max-width: none;
+    font-size: 17px;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* cards soften slightly on mobile */
+  .card { padding: 20px; border-radius: 8px; }
+  .card--profile { padding-top: 22px; }
+  .card--profile::before { left: 14px; font-size: 10px; }
+
+  /* app tile contents */
+  .app-ico { width: 44px; height: 44px; }
+  .app-ico::before { font-size: 18px; }
+  .app-title { font-size: 17px; }
+  .app-sub { font-size: 13px; }
+  .app-arrow { top: 14px; right: 16px; }
+  .app--feature::before { top: 14px; left: 16px; }
+
+  /* detail pages */
+  .page-shell { padding: 10px; }
+  .hero { padding: 22px; gap: 12px; }
+  .hero .app-ico { width: 52px; height: 52px; }
+  .hero h1 { font-size: clamp(26px, 8vw, 34px); }
+  .hero p { font-size: 16px; }
+  .section { padding: 20px; }
+  .entry { gap: 14px; padding: 18px 0; }
+  .entry-thumb { width: 64px; height: 64px; }
+  .entry-top { flex-direction: column; align-items: flex-start; gap: 2px; }
+  .entry-body h3 { font-size: 17px; }
+  .entry-body p { font-size: 14.5px; }
+  .back { padding: 7px 12px; font-size: 13px; }
+  .timeline li { flex-direction: column; gap: 2px; }
+  .timeline .yr { width: auto; font-size: 13px; }
 }
 
-.animate {
-  @apply opacity-0 translate-y-3;
-  @apply transition-all duration-700 ease-out;
+/* ----- DESKTOP: two-column layout ----- */
+@media (min-width: 860px) {
+  .app[data-view] {
+    grid-template-columns: minmax(360px, 36%) 1fr;
+    grid-template-rows: var(--bar-h) 1fr;
+    grid-template-areas:
+      "barmain barapps"
+      "left    apps";
+    height: 100vh;
+  }
+  .bar--main { grid-area: barmain; }
+  .bar--apps { grid-area: barapps; }
+
+  /* left column shows Info OR Contact; apps column is always visible */
+  .panel--info,
+  .panel--contact { grid-area: left; overflow-y: auto; }
+  .panel--apps { grid-area: apps; overflow-y: auto; display: block; }
+
+  .app:has(#view-info:checked)    .panel--contact { display: none; }
+  .app:has(#view-contact:checked) .panel--info    { display: none; }
+
+  .panel::-webkit-scrollbar { width: 0; }
 }
 
-.animate.show {
-  @apply opacity-100 translate-y-0;
+/* ----- TABLET ----- */
+@media (min-width: 860px) and (max-width: 1100px) {
+  .app[data-view] { grid-template-columns: minmax(320px, 44%) 1fr; }
 }
 
-html #back-to-top {
-  @apply opacity-0 pointer-events-none;
+/* ----- VERY NARROW PHONES ----- */
+@media (max-width: 380px) {
+  .bar { padding: 0 8px; }
+  .tab { padding: 6px 9px; font-size: 12px; }
 }
 
-html.scrolled #back-to-top {
-  @apply opacity-100 pointer-events-auto;
+/* ----- REDUCED MOTION ----- */
+@media (prefers-reduced-motion: reduce) {
+  .app, .app * { transition: none !important; }
+  ::view-transition-group(*) { animation: none !important; }
 }

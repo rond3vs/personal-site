@@ -1,0 +1,39 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+
+export async function getStaticPaths() {
+  const businesses = await getCollection('businesses');
+  return businesses.map((entry) => ({ params: { id: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<PageLayout title={`${entry.data.title} — LaRon`} back="/businesses" backLabel="← Businesses">
+  <section class="hero hero--business">
+    <span class="hero-eyebrow">Business</span>
+    <h1>{entry.data.title}</h1>
+    <p>{entry.data.description}</p>
+  </section>
+
+  <section class="section">
+    <h2>Stats</h2>
+    <ul class="timeline">
+      {entry.data.employees != null && (
+        <li><span class="yr">Employees</span><span class="role">{entry.data.employees}</span></li>
+      )}
+      {entry.data.profit && (
+        <li><span class="yr">Monthly profit</span><span class="role">{entry.data.profit}</span></li>
+      )}
+    </ul>
+  </section>
+
+  <section class="section">
+    <div class="prose"><Content /></div>
+    {entry.data.url && (
+      <p style="margin-top:18px;"><a class="more-pill" href={entry.data.url} target="_blank" rel="noopener">Visit site ↗</a></p>
+    )}
+  </section>
+</PageLayout>

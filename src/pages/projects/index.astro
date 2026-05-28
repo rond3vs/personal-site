@@ -1,30 +1,39 @@
 ---
-import { getCollection } from "astro:content";
-import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
-import ArrowCard from "@components/ArrowCard.astro";
-import { PROJECTS } from "@consts";
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
 
-const projects = (await getCollection("projects"))
-  .filter(project => !project.data.draft)
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const projects = (await getCollection('projects')).sort(
+  (a, b) => (b.data.date?.valueOf() ?? 0) - (a.data.date?.valueOf() ?? 0)
+);
+const thumbs = ['g-green', 'g-blue', 'g-pink', 'g-orange'];
 ---
 
-<PageLayout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
-  <Container>
-    <div class="space-y-10">
-      <div class="animate font-semibold text-black dark:text-white">
-        Projects
-      </div>
-      <ul class="animate flex flex-col gap-4">
-        {
-          projects.map((project) => (
-            <li>
-              <ArrowCard entry={project}/>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </Container>
+<PageLayout title="Projects — LaRon" back="/" backLabel="← Back">
+  <section class="hero hero--projects">
+    <span class="app-ico app-ico--projects">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+        <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+      </svg>
+    </span>
+    <h1>Projects</h1>
+    <p>Things I've built — mostly with Astro, and mostly with no frameworks.</p>
+  </section>
+
+  <section class="section">
+    <h2>{projects.length} projects</h2>
+    {projects.map((p, i) => (
+      <a class="entry" href={`/projects/${p.id}`}>
+        <div class={`entry-thumb ${thumbs[i % thumbs.length]}`}></div>
+        <div class="entry-body">
+          <div class="entry-top">
+            <h3>{p.data.title}</h3>
+            {p.data.date && <span class="entry-date">{p.data.date.getFullYear()}</span>}
+          </div>
+          <p>{p.data.description}</p>
+          {p.data.tag && <span class="tag">{p.data.tag}</span>}
+        </div>
+      </a>
+    ))}
+  </section>
 </PageLayout>

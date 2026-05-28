@@ -1,26 +1,34 @@
 ---
-import { getCollection } from "astro:content";
-import PageLayout from "@layouts/PageLayout.astro";
-import Container from "@components/Container.astro";
-import ArrowCard from "@components/ArrowCard.astro";
-import { SITE, PROJECTS } from "@consts";
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
 
-const businesses = (await getCollection("businesses")).slice(0,SITE.NUM_BUSINESSES_ON_HOMEPAGE);
+const businesses = await getCollection('businesses');
+const thumbs = ['g-green', 'g-blue', 'g-pink', 'g-orange'];
 ---
 
-<PageLayout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
-  <Container>
-    <div class="space-y-10">
-      <div class="animate font-semibold text-black dark:text-white">
-        Businesses
-      </div>
-      <ul class="flex flex-col gap-4">
-        {businesses.map(entry => (
-          <li>
-            <ArrowCard entry={entry} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  </Container>
+<PageLayout title="Businesses — LaRon" back="/" backLabel="← Back">
+  <section class="hero hero--business">
+    <span class="hero-eyebrow">Featured</span>
+    <h1>Businesses</h1>
+    <p>Things I'm building and running on my own.</p>
+  </section>
+
+  <section class="section">
+    <h2>My businesses</h2>
+    {businesses.map((b, i) => (
+      <a class="entry" href={`/businesses/${b.id}`}>
+        <div class={`entry-thumb ${thumbs[i % thumbs.length]}`}></div>
+        <div class="entry-body">
+          <div class="entry-top">
+            <h3>{b.data.title}</h3>
+            {b.data.employees && (
+              <span class="entry-date">{b.data.employees} {b.data.employees === 1 ? 'employee' : 'employees'}</span>
+            )}
+          </div>
+          <p>{b.data.description}</p>
+          {b.data.profit && <span class="tag">Monthly profit: {b.data.profit}</span>}
+        </div>
+      </a>
+    ))}
+  </section>
 </PageLayout>

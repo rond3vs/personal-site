@@ -1,27 +1,25 @@
 ---
-import Head from "@components/Head.astro";
-import Header from "@components/Header.astro";
-import Footer from "@components/Footer.astro";
-import { SITE } from "@consts";
+import Base from './Base.astro';
+import BrandMark from '../components/BrandMark.astro';
 
-type Props = {
+interface Props {
   title: string;
-  description: string;
-};
-
-const { title, description } = Astro.props;
+  description?: string;
+  back?: string;
+  backLabel?: string;
+}
+const { title, description, back = '/', backLabel = '← Back' } = Astro.props;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <Head title={`${title} | ${SITE.NAME}`} description={description} />
-  </head>
-  <body>
-    <Header />
-    <main>
+<Base title={title} description={description}>
+  <div class="page-shell">
+    <header class="bar bar--main">
+      <a class="brand" href="/" aria-label="Home"><BrandMark /></a>
+      <a class="back" href={back}>{backLabel}</a>
+    </header>
+
+    <main class="page-wrap">
       <slot />
     </main>
-    <Footer />
-  </body>
-</html>
+  </div>
+</Base>
