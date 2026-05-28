@@ -646,6 +646,18 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     margin-top: var(--gap);
   }
 
+  /* sticky stacking: each card/section pins just below the nav, and the next
+     one scrolls up and stacks over it (they bump into each other on scroll).
+     The nav's higher z-index keeps it above the stack. */
+  .card,
+  .hero,
+  .section,
+  .apps-grid,
+  .now-grid {
+    position: sticky;
+    top: 62px;
+  }
+
   /* uniform 8px rounding on every box on mobile (incl. the nav) */
   .bar,
   .card,
@@ -676,16 +688,17 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .bar--apps { display: none; }
   .card--foot { display: none; }
 
-  /* show only the panels for the active view */
+  /* show only the panels for the active view. display:contents promotes the
+     cards to direct children of .app so they can sticky-stack across the page
+     (instead of being clamped inside each panel box). */
   .panel { display: none; }
   .app:has(#view-info:checked)    .panel--info,
   .app:has(#view-info:checked)    .panel--apps,
-  .app:has(#view-contact:checked) .panel--contact { display: flex; }
+  .app:has(#view-contact:checked) .panel--contact { display: contents; }
 
   /* even 2-column launcher; cards size to content (a touch larger),
      no inner scroll — the whole page scrolls if everything doesn't fit */
   .apps-grid {
-    flex: 1;                       /* fill the panel width */
     grid-template-columns: 1fr 1fr;
     grid-template-areas: none;
     grid-template-rows: none;
