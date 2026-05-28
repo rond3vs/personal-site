@@ -407,8 +407,10 @@ svg { display: block; }
 }
 .app-arrow::before { content: "->"; font-size: 16px; letter-spacing: -1px; }
 
-/* featured tile (Businesses) — inverted dark block */
-.apps-grid > .app--feature { background: #0a0a0a; color: #fff; }
+/* featured tile (Businesses) — inverted dark block.
+   It has no flow icon, so push its text to the bottom; that keeps it
+   clear of the [ $ ] marker (top-left) and the arrow (top-right). */
+.apps-grid > .app--feature { background: #0a0a0a; color: #fff; justify-content: flex-end; }
 .app--feature .app-sub { color: rgba(255, 255, 255, .6); }
 .app--feature .app-arrow { color: rgba(255, 255, 255, .55); }
 .app--feature:hover .app-arrow { color: #fff; }
@@ -626,6 +628,16 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 
 /* ----- MOBILE: viewport-locked home, tap to navigate ----- */
 @media (max-width: 859px) {
+  /* Lock the home to the viewport — no body scroll or rubber-band bounce.
+     Scoped with :has() so it only affects the home (which has .app[data-view]);
+     detail pages don't, so they keep scrolling normally. */
+  html:has(.app[data-view]),
+  body:has(.app[data-view]) {
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
   .app[data-view] {
     display: flex;
     flex-direction: column;
@@ -678,7 +690,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     grid-template-columns: 1fr 1fr;
     grid-template-areas: none;
     grid-template-rows: none;
-    grid-auto-rows: minmax(150px, 1fr);
+    grid-auto-rows: minmax(150px, auto);   /* grow to fit text instead of clipping it */
   }
   .apps-grid > .app {
     grid-area: auto;
