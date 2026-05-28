@@ -646,17 +646,30 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     margin-top: var(--gap);
   }
 
-  /* sticky stacking: each card/section pins just below the nav, and the next
-     one scrolls up and stacks over it (they bump into each other on scroll).
-     The nav's higher z-index keeps it above the stack. */
+  /* Sticky stacking: each card/section pins a fixed step below the previous
+     one (a fanned deck), and they release in reverse as you scroll back up.
+     --si is the stack index; 56px is the per-card peek. The nav's higher
+     z-index keeps it above the stack. */
   .card,
   .hero,
   .section,
   .apps-grid,
   .now-grid {
     position: sticky;
-    top: 62px;
+    top: calc(62px + var(--si, 0) * 56px);
   }
+
+  /* assign the stack index — home cards sit in separate panels… */
+  .panel--info > :nth-child(1)     { --si: 0; }   /* profile */
+  .panel--info > :nth-child(2)     { --si: 1; }   /* "more about me" bar */
+  .panel--apps .apps-grid          { --si: 2; }
+  .panel--contact > .card--contact { --si: 0; }
+
+  /* …detail-page cards are direct children of .page-wrap */
+  .page-wrap > :nth-child(1) { --si: 0; }
+  .page-wrap > :nth-child(2) { --si: 1; }
+  .page-wrap > :nth-child(3) { --si: 2; }
+  .page-wrap > :nth-child(4) { --si: 3; }
 
   /* uniform 8px rounding on every box on mobile (incl. the nav) */
   .bar,
