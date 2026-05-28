@@ -628,23 +628,13 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 
 /* ----- MOBILE: viewport-locked home, tap to navigate ----- */
 @media (max-width: 859px) {
-  /* Lock the home to the viewport — no body scroll or rubber-band bounce.
-     Scoped with :has() so it only affects the home (which has .app[data-view]);
-     detail pages don't, so they keep scrolling normally. */
-  html:has(.app[data-view]),
-  body:has(.app[data-view]) {
-    height: 100%;
-    overflow: hidden;
-    overscroll-behavior: none;
-  }
-
+  /* Home stacks vertically and fills at least one screen; if the content
+     overflows, the whole page scrolls normally (no inner scroll box).
+     min-height uses dvh (not vh) so it never forces a phantom scroll. */
   .app[data-view] {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;          /* the page itself never scrolls */
+    min-height: 100dvh;
   }
 
   /* top bar gets tighter */
@@ -667,36 +657,20 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .app:has(#view-info:checked)    .panel--apps,
   .app:has(#view-contact:checked) .panel--contact { display: flex; }
 
-  /* intro keeps its size; apps/contact fill the rest and scroll inside */
-  .panel--info { flex: 0 0 auto; }
-  .panel--apps,
-  .panel--contact {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  .panel--apps::-webkit-scrollbar,
-  .panel--contact::-webkit-scrollbar { display: none; }
-
-  /* even 2-column launcher; tiles keep a comfortable min height */
+  /* even 2-column launcher; cards size to content (a touch larger),
+     no inner scroll — the whole page scrolls if everything doesn't fit */
   .apps-grid {
-    flex: 1;
-    height: auto;
-    min-height: 100%;
+    flex: 1;                       /* fill the panel width */
     grid-template-columns: 1fr 1fr;
     grid-template-areas: none;
     grid-template-rows: none;
-    grid-auto-rows: minmax(150px, auto);   /* grow to fit text instead of clipping it */
+    grid-auto-rows: minmax(170px, auto);
   }
   .apps-grid > .app {
     grid-area: auto;
     grid-column: auto;
-    min-height: 150px;
-    padding: 16px;
+    min-height: 170px;
+    padding: 18px;
     gap: 10px;
   }
 
