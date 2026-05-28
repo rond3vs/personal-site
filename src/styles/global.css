@@ -635,15 +635,6 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     display: flex;
     flex-direction: column;
     min-height: 100dvh;
-    padding-top: 0;            /* the sticky nav provides the top spacing */
-  }
-
-  /* fixed (sticky) nav — stays pinned at the top while the page scrolls */
-  .bar--main {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    margin-top: var(--gap);
   }
 
   /* uniform 8px rounding on every box on mobile (incl. the nav) */
@@ -725,7 +716,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .app--feature::before { top: 14px; left: 16px; }
 
   /* detail pages */
-  .page-shell { padding: 0 10px 10px; }
+  .page-shell { padding: 10px; }
   .hero { padding: 22px; gap: 12px; }
   .hero .app-ico { width: 52px; height: 52px; }
   .hero h1 { font-size: clamp(26px, 8vw, 34px); }
