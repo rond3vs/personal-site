@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
+import Newsletter from '../../components/Newsletter.astro';
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
@@ -17,6 +18,8 @@ const posts = (await getCollection('blog')).sort(
     <h1>Ronny Thoughts</h1>
     <p>Reflections on life and building — written in the open as I figure things out.</p>
   </section>
+
+  <Newsletter />
 
   <section class="section">
     <h2>{posts.length} {posts.length === 1 ? 'post' : 'posts'}</h2>
