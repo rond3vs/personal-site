@@ -70,7 +70,8 @@ svg { display: block; }
 .card,
 .section,
 .hero,
-.apps-grid > .app {
+.apps-grid > .app,
+.now-card {
   border: 1.5px solid var(--line);
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
               rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
@@ -547,6 +548,36 @@ svg { display: block; }
 .timeline .role { font-weight: 500; }
 .timeline .role span { color: var(--ink-soft); font-weight: 400; }
 
+/* ---- "currently into" — grid of cards ---- */
+.now-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+}
+.now-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px;
+  min-height: 120px;
+  background: var(--card);
+}
+.now-cat {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent);
+}
+.now-cat::before { content: "// "; }
+.now-card h3 { font-size: 19px; font-weight: 600; }
+.now-card p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.5; }
+
+a.now-card { transition: transform .12s ease, box-shadow .12s ease; }
+a.now-card:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--line); }
+a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink); }
+
 /* ---- prose (rendered markdown body of a collection entry) ---- */
 .prose { color: var(--ink); font-size: 17px; line-height: 1.6; max-width: 62ch; }
 .prose > * + * { margin-top: 1em; }
@@ -690,6 +721,8 @@ svg { display: block; }
   .hero h1 { font-size: clamp(26px, 8vw, 34px); }
   .hero p { font-size: 16px; }
   .section { padding: 20px; }
+  .now-grid { gap: 10px; }
+  .now-card { padding: 16px; min-height: 0; }
   .entry { gap: 14px; padding: 18px 0; }
   .entry-thumb { width: 64px; height: 64px; }
   .entry-top { flex-direction: column; align-items: flex-start; gap: 2px; }

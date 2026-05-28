@@ -1,5 +1,8 @@
 ---
+import { getCollection } from 'astro:content';
 import PageLayout from '../layouts/PageLayout.astro';
+
+const items = await getCollection('currently');
 ---
 
 <PageLayout title="Currently into — LaRon" back="/" backLabel="← Back">
@@ -10,15 +13,26 @@ import PageLayout from '../layouts/PageLayout.astro';
       </svg>
     </span>
     <span class="hero-eyebrow">Currently into</span>
-    <h1>Coming soon</h1>
-    <p>A spot for whatever I'm into lately — books, tools, games, rabbit holes. Haven't filled it in yet.</p>
+    <h1>Right now</h1>
+    <p>Products, tools and things I'm using, playing and watching at the moment.</p>
   </section>
 
-  <section class="section">
-    <h2>On the list</h2>
-    <p style="font-size:18px;line-height:1.6;color:var(--ink-soft);max-width:60ch;">
-      Nothing here yet. This is where I'll jot down what's caught my attention
-      recently — check back soon.
-    </p>
-  </section>
+  <div class="now-grid">
+    {items.map((item) => {
+      const Tag = item.data.url ? 'a' : 'div';
+      return (
+        <Tag
+          class="now-card"
+          href={item.data.url}
+          target={item.data.url ? '_blank' : undefined}
+          rel={item.data.url ? 'noopener' : undefined}
+        >
+          {item.data.category && <span class="now-cat">{item.data.category}</span>}
+          <h3>{item.data.title}</h3>
+          <p>{item.data.description}</p>
+          {item.data.url && <span class="app-arrow" aria-hidden="true">↗</span>}
+        </Tag>
+      );
+    })}
+  </div>
 </PageLayout>

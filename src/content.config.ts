@@ -37,4 +37,15 @@ const businesses = defineCollection({
   }),
 });
 
-export const collections = { projects, blog, businesses };
+// Currently into — products, tools & things I'm using / playing / watching now
+const currently = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/currently' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.string().optional(),   // e.g. Using, Playing, Collecting, Watching
+    url: z.string().url().optional(),
+  }),
+});
+
+export const collections = { projects, blog, businesses, currently };
