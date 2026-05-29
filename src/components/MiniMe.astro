@@ -1,0 +1,151 @@
+---
+/*
+  Mini-me easter egg 🏃
+  A tiny trapped avatar that begs to be let out (the "script"), then — since
+  nobody does — gets angry and chases the cursor. Click him to set him free.
+  Pure progressive enhancement: if JS/motion is off, the site is unaffected.
+*/
+---
+
+<div class="minime" aria-hidden="true" hidden>
+  <div class="minime__bubble"></div>
+  <pre class="minime__face"></pre>
+</div>
+
+<style>
+  .minime {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    cursor: pointer;
+    user-select: none;
+    transform: translate(24px, 24px);
+    will-change: transform;
+  }
+  .minime[hidden] { display: none; }
+
+  .minime__face {
+    margin: 0;
+    padding: 6px 8px;
+    font: 12px/1.1 var(--font, ui-monospace, monospace);
+    white-space: pre;
+    color: var(--ink, #161616);
+    background: var(--card, #fff);
+    border: 1.5px solid var(--line, #1c1c1c);
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, .3) 0 4px 8px -2px;
+  }
+  .minime--angry .minime__face {
+    color: #b3261e;
+    border-color: #b3261e;
+  }
+
+  .minime__bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    white-space: nowrap;
+    padding: 6px 9px;
+    font: 12px/1 var(--font, ui-monospace, monospace);
+    color: #fff;
+    background: var(--ink, #161616);
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .minime__bubble.show { opacity: 1; }
+</style>
+
+<script>
+  const root = document.querySelector('.minime');
+
+  if (root && !sessionStorage.getItem('minime-freed')) {
+    const face = root.querySelector('.minime__face');
+    const bubble = root.querySelector('.minime__bubble');
+
+    const finePointer = matchMedia('(pointer: fine)').matches;
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const CALM  = ".----.\n|o  o|\n| ~~ |\n'----'";
+    const ANGRY = ".----.\n|>  <|\n| /\\ |\n'----'";
+
+    // position + chase target
+    let x = 24;
+    let y = Math.max(24, window.innerHeight - 130);
+    let tx = x, ty = y;
+
+    const place = () => { root.style.transform = `translate(${x}px, ${y}px)`; };
+    const say = (text, ms = 0) => {
+      bubble.textContent = text;
+      bubble.classList.add('show');
+      if (ms) setTimeout(() => bubble.classList.remove('show'), ms);
+    };
+
+    let freed = false;
+    const free = () => {
+      if (freed) return;
+      freed = true;
+      sessionStorage.setItem('minime-freed', '1');
+      root.classList.remove('minime--angry');
+      face.textContent = CALM;
+      say('FREE!! thank you 🎉');
+      root.style.transition = 'transform .9s cubic-bezier(.4,0,.2,1), opacity .9s ease';
+      root.style.transform = `translate(${x}px, -180px)`;
+      root.style.opacity = '0';
+      setTimeout(() => root.remove(), 1000);
+    };
+    root.addEventListener('click', free);
+
+    const taunts = ['come back here!', 'stop moving!', 'rawr', 'let me OUT!', 'i see you…'];
+
+    const startChase = () => {
+      if (freed) return;
+      root.classList.add('minime--angry');
+      face.textContent = ANGRY;
+
+      if (reduce)      { say("i'd chase you… but reduced-motion. lucky."); return; }
+      if (!finePointer){ say('ugh… no mouse to chase.'); return; }
+
+      say("fine. i'll come to YOU.", 2200);
+      addEventListener('mousemove', (e) => { tx = e.clientX + 18; ty = e.clientY + 18; });
+      setInterval(() => { if (!freed) say(taunts[(Math.random() * taunts.length) | 0], 1300); }, 4500);
+
+      const loop = () => {
+        if (freed) return;
+        x += (tx - x) * 0.12;
+        y += (ty - y) * 0.12;
+        place();
+        requestAnimationFrame(loop);
+      };
+      loop();
+    };
+
+    // intro "script" (once per session), then he loses patience and chases
+    const begin = () => {
+      face.textContent = CALM;
+      place();
+      root.hidden = false;
+
+      if (sessionStorage.getItem('minime-introDone')) { startChase(); return; }
+
+      const lines = ['psst… hey.', 'let me out of here!', 'i know you can see me.', 'hello?? anyone there?'];
+      let i = 0;
+      say(lines[i]);
+      const iv = setInterval(() => {
+        i++;
+        if (i < lines.length) {
+          say(lines[i]);
+        } else {
+          clearInterval(iv);
+          sessionStorage.setItem('minime-introDone', '1');
+          startChase();
+        }
+      }, 1900);
+    };
+
+    setTimeout(begin, 700);
+  }
+</script>
