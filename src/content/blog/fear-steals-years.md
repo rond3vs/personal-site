@@ -1,48 +1,42 @@
 ---
 title: Fear Steals Years
-description: The first step was just opening my mouth.
+description: I waited years because I was scared to ask.
 date: 2026-05-30
 url: https://laron.xyz/blog/fear-steals-years
 ---
 
 I waited so long because I was scared.
 
-Lesson learned. Fear robs years from your life.
+That is really all it was.
 
-You think you are in a comfortable position, but sometimes that comfort is just an illusion stealing time from you. You feel safe because nothing is changing. No one is rejecting you. No one is telling you no. No one is forcing you to explain yourself.
-
-But you are still paying a price.
-
-That price is the time you lose staying quiet.
-
-I started this web design business years ago. My grandma's church was my first paying client. My uncle was my first client too. I had proof that I could do the work. I had proof that somebody would pay me.
+I started this web design business years ago. My grandma's church was my first paying client. My uncle paid me too. So I knew I could do the work. I knew somebody would pay for it.
 
 Then two or three years went by and I did not get another client.
 
-Not because I sucked. Not because the market was bad. Not because nobody needed a website. I just did not attempt. Not one call. Not one message. I was not even telling people, "This is what I do."
+Not because I was bad. Not because the market was bad. Not because nobody needed a website. I just did not try.
 
-That is hard to admit, but it is the truth.
+I did not make calls. I did not send messages. I barely told people, "This is what I do."
 
-Years ago I talked to a guy named Ronny. He builds metal buildings. At the time I was getting ready to start my basketball business, but I got lazy or scared and never followed through. My assumptions were throwing me off. I was answering for people before I even gave them a chance to answer for themselves.
+I thought I was comfortable. Really, I was just avoiding the chance of hearing no.
 
-Then years went by.
+Today I went and talked to Ronny. He builds metal buildings. I talked to him years ago when I was getting ready to start my basketball business. Back then I never followed up. I got lazy. Or scared. Probably both.
 
-Today I met with Ronny again. I do not even think he remembered me. I sat down, talked to him, and told him my plans. I explained what I wanted to build and how I thought it could help.
+I made too many guesses in my head. I guessed he would not care. I guessed it would be awkward. I guessed wrong before I even gave him a chance to answer.
+
+Years passed.
+
+Today I sat down with him again. I do not think he remembered me. That was fine. I told him my plans and what I wanted to build.
 
 He said okay.
 
 "I'll shoot you over a contract and pricing."
 
-That was it.
-
 The first step was done.
 
-That is how easy it was. Not easy like the whole thing is finished. Not easy like nothing can go wrong. Easy like the door was never locked. I just had to open my mouth.
+It was not some big dramatic thing. I just had to go in there and talk. That was the part I had built up in my head for years.
 
-I wasted years being scared of nothing.
+I wasted a lot of time being scared of something simple.
 
-That is the part I do not want to forget. Fear will make a simple conversation feel like a mountain. It will make comfort look like wisdom. It will make waiting feel responsible.
+That is the lesson. Fear can make doing nothing feel normal. It can make waiting feel smart. It can make you think you are protecting yourself when you are really just losing time.
 
-But at some point you have to ask yourself what comfort is costing you.
-
-For me, it cost years.
+I do not want to keep paying that price.
