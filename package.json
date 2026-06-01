@@ -7,10 +7,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "stamp": "node scripts/stamp-hunch.mjs",
+    "stamp:whoami": "node scripts/whoami.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
+    "algosdk": "^3.5.2",
     "astro": "^5.0.0"
   }
 }

@@ -25,6 +25,10 @@ const blog = defineCollection({
     url: z.string().url().optional(),
     // Lessons — life lessons learned · Hunches — bets on the future · Strays — random thoughts
     category: z.enum(['Lessons', 'Hunches', 'Strays']).default('Strays'),
+    // Proof of existence: sha256 of the post body, timestamped on Algorand MainNet.
+    // Set via `npm run stamp -- <post>`. See scripts/stamp-hunch.mjs.
+    proofHash: z.string().optional(),
+    proofTxn: z.string().optional(),
   }),
 });
 

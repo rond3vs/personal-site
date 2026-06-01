@@ -12,6 +12,10 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const year = entry.data.date.getFullYear();
+const { proofTxn, proofHash } = entry.data;
+const stampedDate = entry.data.date.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
 ---
 
 <PageLayout title={`${entry.data.title} — LaRon`} back="/blog" backLabel="← Ronny Thoughts">
@@ -28,5 +32,21 @@ const year = entry.data.date.getFullYear();
 
   <section class="section">
     <div class="prose"><Content /></div>
+
+    {proofTxn && (
+      <a
+        class="proof"
+        href={`https://allo.info/tx/${proofTxn}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <span class="proof-lock" aria-hidden="true">🔒</span>
+        <span class="proof-text">
+          <strong>Timestamped on Algorand</strong>
+          <span>Locked in on {stampedDate} — unedited since. View on-chain proof ↗</span>
+          {proofHash && <code>sha256: {proofHash}</code>}
+        </span>
+      </a>
+    )}
   </section>
 </PageLayout>

@@ -15,6 +15,7 @@ const filters = [
     value: c,
     count: posts.filter((p) => p.data.category === c).length,
   })),
+  { label: '🔒 Stamped', value: 'stamped', count: posts.filter((p) => p.data.proofTxn).length },
 ];
 ---
 
@@ -32,29 +33,34 @@ const filters = [
 
 
   <section class="section">
-    <div class="filters" role="tablist" aria-label="Filter posts by category">
-      {filters.map((f, i) => (
-        <button
-          class="filter"
-          type="button"
-          role="tab"
-          data-filter={f.value}
-          aria-selected={i === 0 ? 'true' : 'false'}
-        >
-          {f.label} <span class="filter-count">{f.count}</span>
-        </button>
-      ))}
+    <div class="filters">
+      <label class="filter-label" for="cat-filter">Filter</label>
+      <select class="filter-select" id="cat-filter" aria-label="Filter posts by category">
+        {filters.map((f) => (
+          <option value={f.value}>{f.label} ({f.count})</option>
+        ))}
+      </select>
     </div>
 
     {posts.map((post) => (
-      <a class="entry" href={`/blog/${post.id}`} data-category={post.data.category}>
+      <a
+        class="entry"
+        href={`/blog/${post.id}`}
+        data-category={post.data.category}
+        data-stamped={post.data.proofTxn ? 'true' : 'false'}
+      >
         <div class="entry-body">
           <div class="entry-top">
             <h3>{post.data.title}</h3>
             <span class="entry-date">{post.data.date.getFullYear()}</span>
           </div>
           <p>{post.data.description}</p>
-          <span class="cat-chip">{post.data.category}</span>
+          <span class="chips">
+            <span class="cat-chip">{post.data.category}</span>
+            {post.data.proofTxn && (
+              <span class="cat-chip cat-chip--stamped">🔒 Stamped</span>
+            )}
+          </span>
         </div>
       </a>
     ))}
@@ -64,24 +70,24 @@ const filters = [
 </PageLayout>
 
 <script>
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const select = document.querySelector<HTMLSelectElement>('.filter-select');
   const entries = document.querySelectorAll<HTMLAnchorElement>('.entry[data-category]');
   const empty = document.querySelector<HTMLParagraphElement>('.filter-empty');
 
   function apply(value: string) {
     let shown = 0;
     entries.forEach((el) => {
-      const match = value === 'all' || el.dataset.category === value;
+      const match =
+        value === 'all'
+          ? true
+          : value === 'stamped'
+            ? el.dataset.stamped === 'true'
+            : el.dataset.category === value;
       el.hidden = !match;
       if (match) shown++;
     });
     if (empty) empty.hidden = shown > 0;
   }
 
-  buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      buttons.forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
-      apply(btn.dataset.filter ?? 'all');
-    });
-  });
+  select?.addEventListener('change', () => apply(select.value));
 </script>

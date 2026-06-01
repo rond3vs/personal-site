@@ -14,3 +14,6 @@ dist/
 
 # local tooling
 .claude/
+
+# secrets (Algorand stamping mnemonic, etc.) — also hide the .example template
+.env*
