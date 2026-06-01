@@ -893,7 +893,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .bar { padding: 0 10px; gap: 6px; height: 54px; }
   .brand { width: 36px; height: 36px; }
   .brand svg { width: 18px; height: 18px; }
-  .tabset { gap: 6px; margin-left: 0; }
+  .tabset { gap: 6px; margin-left: auto; }
   .tab { padding: 6px 11px; gap: 6px; font-size: 13px; }
   .tab .ico { width: 11px; height: 11px; }
   .tab .ico::before { width: 11px; }
