@@ -593,26 +593,156 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 
 
 /* ============================================================
-   6. VIEW TRANSITIONS (cross-document, no JS)
+   6. VIEW TRANSITIONS (cross-document + home view switch, no JS)
    ============================================================ */
 @view-transition { navigation: auto; }
 
-/* full-page crossfade */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: .5s;
-  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+::view-transition {
+  background: var(--accent);
 }
 
-/* morphing elements glide between pages */
+::view-transition-group(root) {
+  animation-duration: .12s;
+  animation-timing-function: cubic-bezier(.2, .9, .1, 1);
+}
+
+::view-transition-image-pair(root) {
+  isolation: isolate;
+}
+
+/* CRT power-cut: the old route collapses into a single glowing accent
+   scanline; the new route snaps back open from it with a quick chromatic
+   bloom. Terminal-flavoured and deliberately snappy. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-fill-mode: both;
+  transform-origin: center;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+  animation: vt-crt-out .09s cubic-bezier(.5, 0, 1, .5) both;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+  animation: vt-crt-in .15s cubic-bezier(.12, 1, .3, 1) both;
+}
+
+@keyframes vt-crt-out {
+  0% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scaleY(1);
+    filter: none;
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(49.7% 0 49.7% 0);
+    transform: scaleY(.97);
+    filter: brightness(2.6) contrast(1.4);
+  }
+}
+
+@keyframes vt-crt-in {
+  0% {
+    opacity: 0;
+    clip-path: inset(49.7% 0 49.7% 0);
+    transform: scaleY(1.06) scaleX(1.004);
+    filter: brightness(3) saturate(.5);
+  }
+  14% {
+    opacity: 1;
+    transform: scaleY(.6) scaleX(1.002);
+    filter: brightness(1.7) saturate(.8);
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: scaleY(1) scaleX(1);
+    filter: none;
+  }
+}
+
+/* Shared elements morph with a tight spring so tile-to-page moves
+   feel like the panel is physically opening. */
 ::view-transition-group(*) {
-  animation-duration: .55s;
-  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  animation-duration: .16s;
+  animation-timing-function: cubic-bezier(.22, 1.2, .3, 1);
+}
+
+::view-transition-group(vt-brand) {
+  animation-duration: .12s;
+  animation-timing-function: cubic-bezier(.2, 1, .3, 1);
+}
+
+::view-transition-old(vt-brand),
+::view-transition-new(vt-brand),
+::view-transition-old(vt-projects),
+::view-transition-new(vt-projects),
+::view-transition-old(vt-blog),
+::view-transition-new(vt-blog),
+::view-transition-old(vt-business),
+::view-transition-new(vt-business),
+::view-transition-old(vt-about),
+::view-transition-new(vt-about),
+::view-transition-old(vt-current),
+::view-transition-new(vt-current) {
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(vt-projects),
+::view-transition-new(vt-blog),
+::view-transition-new(vt-business),
+::view-transition-new(vt-about),
+::view-transition-new(vt-current) {
+  animation: vt-card-lock .14s cubic-bezier(.2, 1, .3, 1) both;
+}
+
+@keyframes vt-card-lock {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(5px);
+    filter: brightness(1.4);
+  }
+  to {
+    clip-path: inset(0);
+    transform: translateY(0);
+    filter: none;
+  }
+}
+
+/* The CSS-only home tabs get a matching quick snap when their panels appear. */
+.app:has(#view-info:checked) .panel--info,
+.app:has(#view-contact:checked) .panel--contact {
+  animation: vt-panel-snap .14s cubic-bezier(.2, 1, .3, 1) both;
+}
+
+@media (max-width: 859px) {
+  .app:has(#view-info:checked) .panel--apps {
+    animation: vt-panel-snap .14s .02s cubic-bezier(.2, 1, .3, 1) both;
+  }
+}
+
+@keyframes vt-panel-snap {
+  from {
+    opacity: 0;
+    transform: translate3d(8px, 0, 0) scale(.99);
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    clip-path: inset(0);
+  }
 }
 
 /* Morph each home tile into its page hero — DESKTOP ONLY.
    On mobile the tiles live in a scrollable box, so morphing them
-   glitches; phones get the plain crossfade instead. */
+   glitches; phones get the slash-wipe instead. */
+.brand { view-transition-name: vt-brand; }
+
 @media (min-width: 860px) {
   .app--projects, .hero--projects { view-transition-name: vt-projects; }
   .app--blog,     .hero--blog     { view-transition-name: vt-blog; }

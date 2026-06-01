@@ -3,9 +3,9 @@ import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 import Newsletter from '../../components/Newsletter.astro';
 
-const posts = (await getCollection('blog')).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
+const posts = (await getCollection('blog'))
+  .filter((post) => import.meta.env.DEV || !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
 
 <PageLayout title="Ronny Thoughts — LaRon" back="/" backLabel="← Back">
