@@ -504,6 +504,8 @@ svg { display: block; }
   align-items: flex-start;
 }
 .entry:first-of-type { border-top: none; padding-top: 8px; }
+/* hidden attr must beat .entry's display:flex for filtering to work */
+.entry[hidden] { display: none; }
 
 /* thumbnails render as a monochrome hatch placeholder */
 .entry-thumb {
