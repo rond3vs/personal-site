@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "new": "node scripts/new-post.mjs",
     "stamp": "node scripts/stamp-hunch.mjs",
     "stamp:whoami": "node scripts/whoami.mjs"
   },
