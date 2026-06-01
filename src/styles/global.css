@@ -27,7 +27,7 @@
   --ink-soft: #9a9a9a;
   --accent: #206a5d;
   --line: #1c1c1c;          /* hard border colour */
-  --radius: 0;              /* square corners (ASCII look) */
+  --radius: 5px;              /* square corners (ASCII look) */
   --radius-sm: 0;
   --gap: 12px;
   --bar-h: 60px;
@@ -72,7 +72,7 @@ svg { display: block; }
 .hero,
 .apps-grid > .app,
 .now-card {
-  border: 1.5px solid var(--line);
+  border: 1px solid var(--line);
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
               rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
               rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
@@ -544,11 +544,9 @@ svg { display: block; }
   font-weight: 600;
   color: var(--ink);
   background: var(--card);
-  border: 1.5px solid var(--line);
+  /* border: 1px solid var(--line); */
   border-radius: var(--radius);
-  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
-              rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
-              rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   transition: background .15s, color .15s, transform .1s;
 }
 .filter:hover { color: var(--accent); }

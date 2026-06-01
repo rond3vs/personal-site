@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
-import Newsletter from '../../components/Newsletter.astro';
+
 
 const posts = (await getCollection('blog'))
   .filter((post) => import.meta.env.DEV || !post.data.draft)
@@ -29,7 +29,7 @@ const filters = [
     <p>Reflections on life and building — written in the open as I figure things out.</p>
   </section>
 
-  <Newsletter />
+
 
   <section class="section">
     <div class="filters" role="tablist" aria-label="Filter posts by category">
