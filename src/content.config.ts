@@ -25,10 +25,18 @@ const blog = defineCollection({
     url: z.string().url().optional(),
     // Lessons — life lessons learned · Hunches — bets on the future · Strays — random thoughts
     category: z.enum(['Lessons', 'Hunches', 'Strays']).default('Strays'),
-    // Proof of existence: sha256 of the post body, timestamped on Algorand MainNet.
-    // Set via `npm run stamp -- <post>`. See scripts/stamp-hunch.mjs.
-    proofHash: z.string().optional(),
-    proofTxn: z.string().optional(),
+    // Append-only timestamp history. Each `npm run stamp -- <post>` adds an entry
+    // (newest first): the sha256 of the body at that moment + its Algorand txn.
+    // Old entries are never removed, so the edit trail stays verifiable.
+    proofs: z
+      .array(
+        z.object({
+          date: z.coerce.date(),
+          hash: z.string(),
+          txn: z.string(),
+        })
+      )
+      .optional(),
   }),
 });
 

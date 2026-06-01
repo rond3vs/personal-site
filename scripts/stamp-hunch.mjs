@@ -77,15 +77,18 @@ const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
 const { txid } = await algod.sendRawTransaction(txn.signTxn(acct.sk)).do();
 const result = await algosdk.waitForConfirmation(algod, txid, 4);
 
-// Write proofHash/proofTxn into the post's frontmatter (upsert each key).
-const upsert = (fm, key, value) =>
-  new RegExp(`^${key}:.*$`, 'm').test(fm)
-    ? fm.replace(new RegExp(`^${key}:.*$`, 'm'), `${key}: ${value}`)
-    : `${fm}\n${key}: ${value}`;
+// Append a new entry to the `proofs:` list in frontmatter (newest first).
+// Old entries are never removed — the edit trail stays verifiable.
+const today = new Date().toISOString().slice(0, 10);
+const entry = `  - date: ${today}\n    hash: ${hash}\n    txn: ${txid}`;
 
 const updated = raw.replace(/^(---\n)([\s\S]*?)(\n---\n)/, (_, open, fm, close) => {
-  fm = upsert(fm, 'proofHash', hash);
-  fm = upsert(fm, 'proofTxn', txid);
+  if (/^proofs:\s*$/m.test(fm)) {
+    // insert right after the `proofs:` line so the newest stamp is first
+    fm = fm.replace(/^(proofs:\s*\n)/m, `$1${entry}\n`);
+  } else {
+    fm = `${fm}\nproofs:\n${entry}`;
+  }
   return open + fm + close;
 });
 writeFileSync(file, updated);
@@ -94,7 +97,7 @@ console.log(`\n✅ Stamped on Algorand ${network} (round ${result.confirmedRound
 console.log(`   sha256: ${hash}`);
 console.log(`   txid:   ${txid}`);
 console.log(`   view:   ${net.explorer}${txid}`);
-console.log(`\n   Wrote proofHash + proofTxn into ${file}`);
+console.log(`\n   Appended a proof entry to ${file}`);
 if (network === 'testnet') {
   console.log(`   ⚠️  TestNet proof — re-stamp on MainNet before deploying for real.`);
 }

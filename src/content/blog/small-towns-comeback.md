@@ -4,10 +4,13 @@ description: A test post for verifying the on-chain timestamp feature.
 date: 2026-02-10
 category: Hunches
 draft: false
-proofHash: 37aee4f55be9a8b6b141f3135da0667d1aad040cd91dbe802f402493a3bca03c
-proofTxn: JBKK5F636MA5Z7UDJRVHCLV5BTZ2YVASBMFYXWLLQXMADX3J3DSA
+proofs:
+  - date: 2026-06-01
+    hash: 6abe69b79e26d55bf593c262017c55281725a9402d9058ccd303cf5ad3003f16
+    txn: HQZBTZLPDWR5HJUGXXON2M3DT4EHHWN6RXPY3442W5A7OMBJ6RXQ
+  - date: 2026-06-01
+    hash: 37aee4f55be9a8b6b141f3135da0667d1aad040cd91dbe802f402493a3bca03c
+    txn: JBKK5F636MA5Z7UDJRVHCLV5BTZ2YVASBMFYXWLLQXMADX3J3DSA
 ---
 
-This is a test post. I'm using it to check that the Algorand timestamping works — that I can lock a hunch onto the blockchain, prove it hasn't been edited since, and show the "Stamped" badge.
-
-If you're reading this, the proof badge below should link to a real transaction on-chain. Once everything checks out, I'll replace this with a real hunch.
+This is a test post. I'm using it to check that the Algorand timestamping works.

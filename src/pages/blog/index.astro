@@ -15,7 +15,7 @@ const filters = [
     value: c,
     count: posts.filter((p) => p.data.category === c).length,
   })),
-  { label: '🔒 Stamped', value: 'stamped', count: posts.filter((p) => p.data.proofTxn).length },
+  { label: '🔒 Stamped', value: 'stamped', count: posts.filter((p) => p.data.proofs?.length).length },
 ];
 ---
 
@@ -47,7 +47,7 @@ const filters = [
         class="entry"
         href={`/blog/${post.id}`}
         data-category={post.data.category}
-        data-stamped={post.data.proofTxn ? 'true' : 'false'}
+        data-stamped={post.data.proofs?.length ? 'true' : 'false'}
       >
         <div class="entry-body">
           <div class="entry-top">
@@ -57,9 +57,9 @@ const filters = [
           <p>{post.data.description}</p>
           <span class="chips">
             <span class="cat-chip">{post.data.category}</span>
-            {post.data.proofTxn && (
+            {post.data.proofs?.length ? (
               <span class="cat-chip cat-chip--stamped">🔒 Stamped</span>
-            )}
+            ) : null}
           </span>
         </div>
       </a>

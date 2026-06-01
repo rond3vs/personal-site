@@ -12,10 +12,16 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const year = entry.data.date.getFullYear();
-const { proofTxn, proofHash } = entry.data;
-const stampedDate = entry.data.date.toLocaleDateString('en-US', {
-  year: 'numeric', month: 'long', day: 'numeric',
-});
+
+// Newest stamp first. The first entry attests the *current* text; older ones
+// are prior versions whose text lives in git history.
+const proofs = [...(entry.data.proofs ?? [])].sort(
+  (a, b) => b.date.valueOf() - a.date.valueOf()
+);
+const fmtDate = (d: Date) =>
+  d.toLocaleDateString('en-US', {
+    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC',
+  });
 ---
 
 <PageLayout title={`${entry.data.title} — LaRon`} back="/blog" backLabel="← Ronny Thoughts">
@@ -33,20 +39,32 @@ const stampedDate = entry.data.date.toLocaleDateString('en-US', {
   <section class="section">
     <div class="prose"><Content /></div>
 
-    {proofTxn && (
-      <a
-        class="proof"
-        href={`https://allo.info/tx/${proofTxn}`}
-        target="_blank"
-        rel="noopener"
-      >
-        <span class="proof-lock" aria-hidden="true">🔒</span>
-        <span class="proof-text">
+    {proofs.length > 0 && (
+      <div class="proof">
+        <div class="proof-head">
+          <span class="proof-lock" aria-hidden="true">🔒</span>
           <strong>Timestamped on Algorand</strong>
-          <span>Locked in on {stampedDate} — unedited since. View on-chain proof ↗</span>
-          {proofHash && <code>sha256: {proofHash}</code>}
-        </span>
-      </a>
+        </div>
+        <p class="proof-blurb">
+          {proofs.length === 1
+            ? 'This text was locked onto the blockchain — unedited since.'
+            : `Locked onto the blockchain ${proofs.length} times. The latest attests the current text; earlier stamps cover prior versions (their text is in this site's git history).`}
+        </p>
+        <ol class="proof-list">
+          {proofs.map((p, i) => (
+            <li>
+              <span class="proof-when">
+                {fmtDate(p.date)}
+                {i === 0 ? <span class="proof-tag">current</span> : null}
+              </span>
+              <a href={`https://allo.info/tx/${p.txn}`} target="_blank" rel="noopener">
+                view on-chain ↗
+              </a>
+              <code>sha256: {p.hash}</code>
+            </li>
+          ))}
+        </ol>
+      </div>
     )}
   </section>
 </PageLayout>
