@@ -116,7 +116,6 @@ svg { display: block; }
   display: flex;
   gap: 8px;
   margin-left: auto;
-  margin-right: auto;
 }
 
 .tab {
@@ -531,6 +530,55 @@ svg { display: block; }
   background: rgba(32, 106, 93, .1);
 }
 
+/* ---- category filters (blog) ---- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.filter {
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
+              rgba(0, 0, 0, 0.3) 0px 7px 13px -3px,
+              rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  transition: background .15s, color .15s, transform .1s;
+}
+.filter:hover { color: var(--accent); }
+.filter:active { transform: translateY(1px); }
+.filter[aria-selected="true"] {
+  color: #fff;
+  background: var(--accent);
+}
+.filter-count {
+  font-variant-numeric: tabular-nums;
+  opacity: .55;
+  font-weight: 500;
+}
+.cat-chip {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(32, 106, 93, .1);
+}
+.filter-empty {
+  color: var(--ink-soft);
+  font-size: 15px;
+  padding: 8px 0;
+}
+
 /* ---- timeline (about page) ---- */
 .timeline { list-style: none; }
 .timeline li {
@@ -597,69 +645,107 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
    ============================================================ */
 @view-transition { navigation: auto; }
 
-::view-transition {
-  background: var(--accent);
-}
-
-::view-transition-group(root) {
-  animation-duration: .12s;
-  animation-timing-function: cubic-bezier(.2, .9, .1, 1);
-}
-
 ::view-transition-image-pair(root) {
   isolation: isolate;
 }
 
-/* App-window zoom: the current route drops backward while the next route
-   opens from a compact rounded panel into the full viewport. */
-::view-transition-old(root),
+/* DEFAULT — interior navigations (not touching home): a quick, simple
+   crossfade. Fast and unobtrusive between content pages. */
+::view-transition-group(root) {
+  animation-duration: .18s;
+  animation-timing-function: cubic-bezier(.2, .9, .1, 1);
+}
+::view-transition-old(root) {
+  animation: vt-fade-out .14s ease both;
+}
 ::view-transition-new(root) {
+  animation: vt-fade-in .18s ease both;
+}
+
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in  { from { opacity: 0; } }
+
+/* HOME — leaving OR entering home (tagged "crt" by the script in Base.astro).
+   CRT power-off → power-on: the outgoing screen collapses to a bright
+   horizontal scanline, pinches to a dot, then the incoming screen blooms back
+   out the same way. Old powers down first; new powers up after. */
+:root:active-view-transition-type(crt)::view-transition {
+  /* a powered-off CRT is black behind the collapsing screen */
+  background: #05060a;
+}
+
+:root:active-view-transition-type(crt)::view-transition-group(root) {
+  animation-duration: .56s;
+  animation-timing-function: linear;
+}
+
+:root:active-view-transition-type(crt)::view-transition-old(root),
+:root:active-view-transition-type(crt)::view-transition-new(root) {
   mix-blend-mode: normal;
   animation-fill-mode: both;
-  transform-origin: center;
+  transform-origin: center center;
 }
 
-::view-transition-old(root) {
+:root:active-view-transition-type(crt)::view-transition-old(root) {
   z-index: 1;
-  animation: vt-window-back .18s cubic-bezier(.3, 0, .2, 1) both;
+  animation: vt-crt-off .26s cubic-bezier(.55, 0, .9, .35) both;
 }
 
-::view-transition-new(root) {
+:root:active-view-transition-type(crt)::view-transition-new(root) {
   z-index: 2;
-  animation: vt-window-open .24s cubic-bezier(.18, 1, .22, 1) both;
+  animation: vt-crt-on .34s .24s cubic-bezier(.16, .9, .3, 1) both;
 }
 
-@keyframes vt-window-back {
+/* power DOWN: shrink to a line, then the line pinches to a glowing dot */
+@keyframes vt-crt-off {
   0% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: none;
+    transform: scale(1, 1);
+    filter: brightness(1) contrast(1);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1, .004);
+    filter: brightness(2.4) contrast(1.2);
+  }
+  92% {
+    opacity: 1;
+    transform: scale(.16, .004);
+    filter: brightness(5) contrast(1.4);
   }
   100% {
-    opacity: .45;
-    transform: translateY(12px) scale(.965);
-    filter: blur(1px) brightness(.78) saturate(.75);
+    opacity: 0;
+    transform: scale(0, .004);
+    filter: brightness(7);
   }
 }
 
-@keyframes vt-window-open {
+/* power UP: a dot stretches into a bright line, then snaps to full height */
+@keyframes vt-crt-on {
   0% {
     opacity: 0;
-    clip-path: inset(34% 36% 34% 36% round 8px);
-    transform: translateY(18px) scale(.86);
-    filter: brightness(1.35) saturate(.85);
+    transform: scale(0, .004);
+    filter: brightness(7);
   }
-  32% {
+  18% {
     opacity: 1;
-    clip-path: inset(18% 20% 18% 20% round 8px);
-    transform: translateY(7px) scale(.96);
-    filter: brightness(1.12) saturate(.95);
+    transform: scale(.16, .004);
+    filter: brightness(5) contrast(1.4);
+  }
+  46% {
+    opacity: 1;
+    transform: scale(1, .004);
+    filter: brightness(2.6) contrast(1.2);
+  }
+  72% {
+    opacity: 1;
+    transform: scale(1, 1);
+    filter: brightness(1.5) contrast(1.05);
   }
   100% {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: translateY(0) scale(1);
-    filter: none;
+    transform: scale(1, 1);
+    filter: brightness(1);
   }
 }
 
@@ -671,8 +757,27 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 }
 
 ::view-transition-group(vt-brand) {
-  animation-duration: .12s;
+  animation-duration: .34s;
   animation-timing-function: cubic-bezier(.2, 1, .3, 1);
+}
+
+/* The brand mark does a quick barrel roll as it flies to its new home. */
+::view-transition-new(vt-brand) {
+  animation: vt-brand-roll .34s cubic-bezier(.2, 1, .3, 1) both;
+  transform-origin: center;
+}
+
+@keyframes vt-brand-roll {
+  from {
+    opacity: 0;
+    transform: rotate(-360deg) scale(.55);
+    filter: brightness(1.3);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+    filter: none;
+  }
 }
 
 ::view-transition-old(vt-brand),
@@ -736,9 +841,11 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   }
 }
 
-/* Morph each home tile into its page hero — DESKTOP ONLY.
-   On mobile the tiles live in a scrollable box, so morphing them
-   glitches; phones get the slash-wipe instead. */
+/* The CRT power-off collapses the whole screen as one unit, so the old
+   tile→hero morphs and brand roll are disabled — a floating, morphing
+   element would break the "screen powering down" illusion. Re-enable
+   any of these names to bring a shared-element morph back. */
+/*
 .brand { view-transition-name: vt-brand; }
 
 @media (min-width: 860px) {
@@ -748,6 +855,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .card--more,    .hero--about    { view-transition-name: vt-about; }
   .app--current,  .hero--current  { view-transition-name: vt-current; }
 }
+*/
 
 
 /* ============================================================

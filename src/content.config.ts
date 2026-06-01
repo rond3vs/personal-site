@@ -23,6 +23,8 @@ const blog = defineCollection({
     date: z.coerce.date(),
     draft: z.boolean().optional(),
     url: z.string().url().optional(),
+    // Lessons — life lessons learned · Hunches — bets on the future · Strays — random thoughts
+    category: z.enum(['Lessons', 'Hunches', 'Strays']).default('Strays'),
   }),
 });
 

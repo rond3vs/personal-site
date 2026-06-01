@@ -2,6 +2,7 @@
 title: Mission Finish What I Started?
 description: Reflecting on how quickly life passes us by.
 date: 2026-03-01
+category: Lessons
 url: https://laron.xyz/blog/01-getting-started
 ---
 

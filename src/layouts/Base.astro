@@ -20,6 +20,21 @@ const {
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="alternate" type="application/rss+xml" title="Ronny Thoughts" href={new URL('rss.xml', Astro.site)} />
+    <!-- The ONLY script on the site: tag any navigation that leaves OR enters
+         home with the "crt" view-transition type, so CSS can give those the
+         power-cycle effect. Cross-document transitions can't detect the source
+         page in pure CSS, hence this. Every other navigation stays type-less
+         and gets the quick default fade. No-op where the API is unsupported. -->
+    <script is:inline>
+      const atHome = (u) => new URL(u, location.href).pathname === '/';
+      addEventListener('pagereveal', (e) => {
+        if (!e.viewTransition) return;
+        const from = window.navigation?.activation?.from?.url;
+        if (atHome(location.href) || (from && atHome(from))) {
+          e.viewTransition.types.add('crt');
+        }
+      });
+    </script>
   </head>
   <body>
     <slot />

@@ -2,6 +2,7 @@
 title: Fear Steals Years
 description: I made one normal conversation way harder than it needed to be.
 date: 2026-05-30
+category: Lessons
 url: https://laron.xyz/blog/fear-steals-years
 ---
 
