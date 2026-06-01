@@ -610,9 +610,8 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   isolation: isolate;
 }
 
-/* CRT power-cut: the old route collapses into a single glowing accent
-   scanline; the new route snaps back open from it with a quick chromatic
-   bloom. Terminal-flavoured and deliberately snappy. */
+/* App-window zoom: the current route drops backward while the next route
+   opens from a compact rounded panel into the full viewport. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   mix-blend-mode: normal;
@@ -622,45 +621,44 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 
 ::view-transition-old(root) {
   z-index: 1;
-  animation: vt-crt-out .09s cubic-bezier(.5, 0, 1, .5) both;
+  animation: vt-window-back .18s cubic-bezier(.3, 0, .2, 1) both;
 }
 
 ::view-transition-new(root) {
   z-index: 2;
-  animation: vt-crt-in .15s cubic-bezier(.12, 1, .3, 1) both;
+  animation: vt-window-open .24s cubic-bezier(.18, 1, .22, 1) both;
 }
 
-@keyframes vt-crt-out {
+@keyframes vt-window-back {
   0% {
     opacity: 1;
-    clip-path: inset(0 0 0 0);
-    transform: scaleY(1);
+    transform: translateY(0) scale(1);
     filter: none;
   }
   100% {
-    opacity: 0;
-    clip-path: inset(49.7% 0 49.7% 0);
-    transform: scaleY(.97);
-    filter: brightness(2.6) contrast(1.4);
+    opacity: .45;
+    transform: translateY(12px) scale(.965);
+    filter: blur(1px) brightness(.78) saturate(.75);
   }
 }
 
-@keyframes vt-crt-in {
+@keyframes vt-window-open {
   0% {
     opacity: 0;
-    clip-path: inset(49.7% 0 49.7% 0);
-    transform: scaleY(1.06) scaleX(1.004);
-    filter: brightness(3) saturate(.5);
+    clip-path: inset(34% 36% 34% 36% round 8px);
+    transform: translateY(18px) scale(.86);
+    filter: brightness(1.35) saturate(.85);
   }
-  14% {
+  32% {
     opacity: 1;
-    transform: scaleY(.6) scaleX(1.002);
-    filter: brightness(1.7) saturate(.8);
+    clip-path: inset(18% 20% 18% 20% round 8px);
+    transform: translateY(7px) scale(.96);
+    filter: brightness(1.12) saturate(.95);
   }
   100% {
     opacity: 1;
     clip-path: inset(0 0 0 0);
-    transform: scaleY(1) scaleX(1);
+    transform: translateY(0) scale(1);
     filter: none;
   }
 }
