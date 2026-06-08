@@ -2,7 +2,7 @@
 title: Why Do We Park Facing Out?
 description: A random thought I had in a parking lot.
 date: 2026-05-05
-category: Strays
+category: Rants
 draft: false
 ---
 

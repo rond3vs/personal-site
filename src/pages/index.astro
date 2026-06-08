@@ -17,16 +17,29 @@ import BrandMark from '../components/BrandMark.astro';
       </nav>
     </header>
 
-    <header class="bar bar--apps">
-      <span class="apps-mark" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="18" height="18">
-          <rect x="3" y="3" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="3" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-          <rect x="3" y="14" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-          <rect x="14" y="14" width="7" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    <header class="bar bar--console" style="cursor: pointer;" title="Click to open command line">
+      <span class="console-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 17 10 11 4 5"/>
+          <line x1="12" y1="19" x2="20" y2="19"/>
         </svg>
       </span>
-      <span>Apps</span>
+      <span class="console-title-text">Console</span>
+
+      <div class="live-status-bar">
+        <span class="status-item" id="status-life">LIFE: 0.00000000%</span>
+        <span class="status-item" id="status-btc">BTC: $--,--−</span>
+        <span class="status-item" id="status-weather" style="display: none;"></span>
+        <span class="status-item" id="status-cpu">CPU: [--------] --%</span>
+        <span class="status-item" id="status-ram">RAM: [-----] --%</span>
+        <span class="status-item" id="status-time">SYS: --:--:--</span>
+      </div>
+
+      <div class="console-input-wrapper" id="cli-wrapper" style="display: none; width: 100%; align-items: center; gap: 8px;">
+        <span style="color: var(--accent); font-weight: bold; font-family: var(--font); font-size: 14px;">&gt;_</span>
+        <input type="text" id="cli-input" placeholder="Type a command (help, projects, blog, my5, weather, exit)..." autocomplete="off" spellcheck="false" style="flex: 1; background: transparent; border: none; outline: none; font-family: var(--font); color: var(--ink); font-size: 13px; padding: 4px 0;" />
+        <span id="cli-feedback" style="color: var(--ink-soft); font-size: 12px; font-family: var(--font); margin-left: auto;"></span>
+      </div>
     </header>
 
     <!-- ============ PANELS ============ -->
@@ -87,9 +100,9 @@ import BrandMark from '../components/BrandMark.astro';
         </div>
       </section>
 
-      <!-- ---------- APPS ---------- -->
-      <section class="panel panel--apps" data-panel="apps">
-        <div class="apps-grid">
+      <!-- ---------- CONSOLE ---------- -->
+      <section class="panel panel--console" data-panel="console">
+        <div class="console-grid">
 
           <a class="app app--projects" href="/projects">
             <span class="app-ico app-ico--projects">
@@ -119,13 +132,12 @@ import BrandMark from '../components/BrandMark.astro';
           </a>
 
           <a class="app app--feature app--business" href="/businesses">
-            <svg class="feature-mark" viewBox="0 0 120 120" aria-hidden="true">
-              <g fill="none" stroke="rgba(255,255,255,.85)" stroke-width="6" stroke-linejoin="round">
-                <path d="M30 30 50 18 50 78 30 90 Z"/>
-                <path d="M50 18 70 30 70 90 50 78 Z"/>
-                <path d="M70 30 90 18 90 78 70 90 Z"/>
-              </g>
-            </svg>
+            <span class="app-ico app-ico--business">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </span>
             <span class="app-meta">
               <span class="app-eyebrow">Featured</span>
               <span class="app-title">Businesses</span>
@@ -134,16 +146,16 @@ import BrandMark from '../components/BrandMark.astro';
             <span class="app-arrow" aria-hidden="true">↗</span>
           </a>
 
-          <a class="app app--current" href="/currently">
-            <span class="app-ico app-ico--current">
+          <a class="app app--my5" href="/my-5">
+            <span class="app-ico app-ico--my5">
               <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 3l2.2 5.5L20 10l-4.5 3.4L17 19l-5-3-5 3 1.5-5.6L4 10l5.8-1.5z"/>
               </svg>
             </span>
             <span class="app-meta">
-              <span class="app-eyebrow">Currently into</span>
-              <span class="app-title">Right now</span>
-              <span class="app-sub">Tools, hobbies &amp; things I'm into</span>
+              <span class="app-eyebrow">Favorites</span>
+              <span class="app-title">My 5</span>
+              <span class="app-sub">Top picks, underrated &amp; overrated</span>
             </span>
             <span class="app-arrow" aria-hidden="true">↗</span>
           </a>
@@ -154,3 +166,323 @@ import BrandMark from '../components/BrandMark.astro';
     </main>
   </div>
 </Base>
+
+<style>
+  .bar--console {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+  .live-status-bar {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    font-family: var(--font);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .status-item {
+    font-variant-numeric: tabular-nums;
+    display: inline-flex;
+    align-items: center;
+  }
+  .status-item:not(:last-child)::after {
+    content: "|";
+    margin-left: 8px;
+    margin-right: 8px;
+    color: var(--line);
+    opacity: 0.25;
+    font-weight: normal;
+  }
+
+  :global(.btc-up) {
+    color: #2e825d;
+  }
+  :global(.btc-down) {
+    color: #b83a3a;
+  }
+
+  @media (max-width: 780px) {
+    #status-ram {
+      display: none;
+    }
+  }
+
+  @media (max-width: 650px) {
+    #status-cpu {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    #status-weather {
+      display: none;
+    }
+  }
+
+  @media (max-width: 450px) {
+    .live-status-bar {
+      font-size: 11px;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    const lifeEl = document.getElementById('status-life');
+    const btcEl = document.getElementById('status-btc');
+    const cpuEl = document.getElementById('status-cpu');
+    const ramEl = document.getElementById('status-ram');
+    const timeEl = document.getElementById('status-time');
+    const weatherEl = document.getElementById('status-weather');
+
+    let currentBTCPrice = null;
+    let lastBTCPrice = null;
+    let btcDirection = '';
+
+    // Birth date for Life Progress: June 8, 1998
+    const birthDate = new Date('1998-06-08T00:00:00');
+    const expectedLifespan = 80;
+
+    // CPU Sparkline state
+    const sparkChars = [' ', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+    let cpuHistory = [2, 3, 1, 4, 2, 5, 3, 4]; // 8 steps
+
+    function tickLifeAndTime() {
+      const now = new Date();
+      const isMobile = window.innerWidth < 600;
+
+      // 1. Life Progress
+      const ageInMs = now.getTime() - birthDate.getTime();
+      const lifespanInMs = expectedLifespan * 365.2422 * 24 * 60 * 60 * 1000;
+      const progress = (ageInMs / lifespanInMs) * 100;
+      if (lifeEl) {
+        lifeEl.textContent = isMobile 
+          ? 'LIFE: ' + progress.toFixed(4) + '%' 
+          : 'LIFE: ' + progress.toFixed(8) + '%';
+      }
+
+      // 2. Clock
+      if (timeEl) {
+        timeEl.textContent = isMobile
+          ? 'SYS: ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+          : 'SYS: ' + now.toLocaleTimeString([], { hour12: false });
+      }
+    }
+
+    // Tick every 50ms for smooth real-time life progress counter
+    setInterval(tickLifeAndTime, 50);
+    tickLifeAndTime();
+
+    // 3. CPU Sparkline simulation
+    function updateCPU() {
+      let lastVal = cpuHistory[cpuHistory.length - 1];
+      let change = Math.floor(Math.random() * 5) - 2; // -2 to +2
+      let newVal = Math.max(1, Math.min(7, lastVal + change));
+      cpuHistory.shift();
+      cpuHistory.push(newVal);
+
+      const sparkline = cpuHistory.map(v => sparkChars[v]).join('');
+      const cpuPercent = Math.floor((newVal / 7) * 45) + 10; // 10% to 55%
+
+      if (cpuEl) {
+        const isMobile = window.innerWidth < 600;
+        if (isMobile) {
+          const shortSpark = cpuHistory.slice(-4).map(v => sparkChars[v]).join('');
+          cpuEl.textContent = 'CPU ' + shortSpark + ' ' + cpuPercent + '%';
+        } else {
+          cpuEl.textContent = 'CPU: [' + sparkline + '] ' + cpuPercent + '%';
+        }
+      }
+    }
+    setInterval(updateCPU, 1000);
+    updateCPU();
+
+    // 4. RAM Load Bar simulation
+    function updateRAM() {
+      const ramPercent = Math.floor(45 + Math.random() * 20);
+      const blocks = Math.round(ramPercent / 20); // 0 to 5 blocks
+      if (ramEl) {
+        const isMobile = window.innerWidth < 600;
+        if (isMobile) {
+          ramEl.textContent = 'RAM ' + ramPercent + '%';
+        } else {
+          const bar = '█'.repeat(blocks) + '░'.repeat(5 - blocks);
+          ramEl.textContent = 'RAM: [' + bar + '] ' + ramPercent + '%';
+        }
+      }
+    }
+    setInterval(updateRAM, 2000);
+    updateRAM();
+
+    // 5. BTC Ticker
+    async function updateBTCPrice() {
+      try {
+        const res = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+        const data = await res.json();
+        const newPrice = parseFloat(data.data.amount);
+        
+        if (lastBTCPrice !== null) {
+          if (newPrice > lastBTCPrice) {
+            btcDirection = 'up';
+          } else if (newPrice < lastBTCPrice) {
+            btcDirection = 'down';
+          }
+        }
+        lastBTCPrice = newPrice;
+        currentBTCPrice = newPrice;
+        renderBTC();
+      } catch (e) {
+        if (btcEl) btcEl.textContent = 'BTC: OFFLINE';
+      }
+    }
+
+    function renderBTC() {
+      if (!currentBTCPrice || !btcEl) return;
+      const isMobile = window.innerWidth < 600;
+      
+      let arrow = '';
+      let colorClass = '';
+      if (btcDirection === 'up') {
+        arrow = ' ▲';
+        colorClass = 'btc-up';
+      } else if (btcDirection === 'down') {
+        arrow = ' ▼';
+        colorClass = 'btc-down';
+      }
+
+      let priceStr = '';
+      if (isMobile) {
+        priceStr = '$' + (currentBTCPrice / 1000).toFixed(1) + 'K';
+      } else {
+        priceStr = currentBTCPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+      }
+
+      btcEl.innerHTML = `BTC: <span class="${colorClass}">${priceStr}${arrow}</span>`;
+    }
+
+    updateBTCPrice();
+    setInterval(updateBTCPrice, 15000);
+
+    // 6. Live Weather via Geo-IP + Open-Meteo
+    async function updateWeather() {
+      try {
+        const ipRes = await fetch('https://ipapi.co/json/');
+        const ipData = await ipRes.json();
+        if (!ipData.latitude || !ipData.longitude) return;
+
+        const city = ipData.city || 'Local';
+        const lat = ipData.latitude;
+        const lon = ipData.longitude;
+
+        const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`);
+        const wData = await wRes.json();
+        if (!wData.current_weather) return;
+
+        const temp = Math.round(wData.current_weather.temperature);
+        const code = wData.current_weather.weathercode;
+
+        let glyph = '☀️';
+        if ([1, 2, 3].includes(code)) glyph = '🌤️';
+        else if ([45, 48].includes(code)) glyph = '🌫️';
+        else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) glyph = '🌧️';
+        else if ([71, 73, 75, 77, 85, 86].includes(code)) glyph = '🌨️';
+        else if ([95, 96, 99].includes(code)) glyph = '⛈️';
+
+        if (weatherEl) {
+          const isMobile = window.innerWidth < 600;
+          const label = isMobile ? city.substring(0, 3).toUpperCase() : city.toUpperCase();
+          weatherEl.textContent = `${label}: ${temp}°F ${glyph}`;
+          weatherEl.style.display = 'inline-flex';
+        }
+      } catch (e) {
+        // Quietly fail
+      }
+    }
+    updateWeather();
+
+    // 7. Interactive Command Line Interface (CLI)
+    const consoleBar = document.querySelector('.bar--console');
+    const cliWrapper = document.getElementById('cli-wrapper');
+    const liveStatusBar = document.querySelector('.live-status-bar');
+    const cliInput = document.getElementById('cli-input');
+    const cliFeedback = document.getElementById('cli-feedback');
+
+    if (consoleBar && cliWrapper && liveStatusBar && cliInput) {
+      consoleBar.addEventListener('click', (e) => {
+        if (e.target.closest('.live-status-bar') || e.target.closest('a') || e.target.closest('input')) return;
+        
+        liveStatusBar.style.display = 'none';
+        cliWrapper.style.display = 'flex';
+        const isMobile = window.innerWidth < 600;
+        cliInput.placeholder = isMobile ? "Type cmd (help, projects, exit)..." : "Type a command (help, projects, blog, my5, weather, exit)...";
+        cliInput.focus();
+      });
+
+      cliInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          exitCLI();
+        } else if (e.key === 'Enter') {
+          const cmd = cliInput.value.trim().toLowerCase();
+          handleCommand(cmd);
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!consoleBar.contains(e.target)) {
+          exitCLI();
+        }
+      });
+    }
+
+    function exitCLI() {
+      if (cliWrapper && liveStatusBar) {
+        cliWrapper.style.display = 'none';
+        liveStatusBar.style.display = 'flex';
+        if (cliInput) cliInput.value = '';
+        if (cliFeedback) cliFeedback.textContent = '';
+      }
+    }
+
+    function handleCommand(cmd) {
+      if (!cmd) return;
+
+      if (cmd === 'help' || cmd === '?') {
+        cliFeedback.textContent = 'Cmds: projects, blog, my5, weather, exit';
+        cliInput.value = '';
+      } else if (cmd === 'projects' || cmd === 'proj') {
+        cliFeedback.textContent = 'Navigating...';
+        setTimeout(() => window.location.href = '/projects', 300);
+      } else if (cmd === 'blog' || cmd === 'thoughts') {
+        cliFeedback.textContent = 'Navigating...';
+        setTimeout(() => window.location.href = '/blog', 300);
+      } else if (cmd === 'my5' || cmd === 'my-5' || cmd === 'favs') {
+        cliFeedback.textContent = 'Navigating...';
+        setTimeout(() => window.location.href = '/my-5', 300);
+      } else if (cmd === 'weather') {
+        if (weatherEl && weatherEl.style.display !== 'none') {
+          cliFeedback.textContent = 'Weather: ' + weatherEl.textContent;
+        } else {
+          cliFeedback.textContent = 'Weather not loaded.';
+        }
+        cliInput.value = '';
+      } else if (cmd === 'clear' || cmd === 'exit' || cmd === 'quit') {
+        exitCLI();
+      } else {
+        cliFeedback.textContent = 'Error: Unknown command. Type "help".';
+        cliInput.value = '';
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      renderBTC();
+      updateCPU();
+      updateRAM();
+    });
+  })();
+</script>

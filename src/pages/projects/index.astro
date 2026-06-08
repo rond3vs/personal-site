@@ -17,23 +17,158 @@ const thumbs = ['g-green', 'g-blue', 'g-pink', 'g-orange'];
       </svg>
     </span>
     <h1>Projects</h1>
-    <p>Things I've built — mostly with Astro, and mostly with no frameworks.</p>
+    <p>Things I've created — coding projects, apps, websites, music, and videos.</p>
   </section>
 
+  <!-- Filter Bar -->
+  <section class="section filter-section">
+    <span class="filter-title">// Filter directory:</span>
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">All ({projects.length})</button>
+      <button class="filter-tab" data-filter="App">Apps</button>
+      <button class="filter-tab" data-filter="Website">Websites</button>
+      <button class="filter-tab" data-filter="Coding">Coding</button>
+      <button class="filter-tab" data-filter="Music">Music</button>
+      <button class="filter-tab" data-filter="Video">Videos</button>
+    </div>
+  </section>
+
+  <!-- Projects Listing -->
   <section class="section">
-    <h2>{projects.length} projects</h2>
-    {projects.map((p, i) => (
-      <a class="entry" href={`/projects/${p.id}`}>
-        <div class={`entry-thumb ${thumbs[i % thumbs.length]}`}></div>
-        <div class="entry-body">
-          <div class="entry-top">
-            <h3>{p.data.title}</h3>
-            {p.data.date && <span class="entry-date">{p.data.date.getFullYear()}</span>}
+    <h2 id="project-count">{projects.length} projects</h2>
+    <div class="projects-list">
+      {projects.map((p, i) => (
+        <a class="entry" href={`/projects/${p.id}`} data-category={p.data.category}>
+          <div class={`entry-thumb ${thumbs[i % thumbs.length]}`}></div>
+          <div class="entry-body">
+            <div class="entry-top">
+              <h3>{p.data.title}</h3>
+              <div class="entry-meta">
+                <span class="entry-cat">// {p.data.category}</span>
+                {p.data.date && <span class="entry-date">{p.data.date.getFullYear()}</span>}
+              </div>
+            </div>
+            <p>{p.data.description}</p>
+            {p.data.tag && <span class="tag">{p.data.tag}</span>}
           </div>
-          <p>{p.data.description}</p>
-          {p.data.tag && <span class="tag">{p.data.tag}</span>}
-        </div>
-      </a>
-    ))}
+        </a>
+      ))}
+      <div id="empty-projects-placeholder" class="empty-placeholder" hidden>
+        [ No projects found in this category ]
+      </div>
+    </div>
   </section>
 </PageLayout>
+
+<style>
+  /* Filter section styling */
+  .filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 22px;
+    margin-bottom: var(--gap);
+  }
+  .filter-title {
+    font-size: 13.5px;
+    font-weight: bold;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .filter-tab {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border: 1.5px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .filter-tab:hover {
+    background: var(--card-soft);
+  }
+  .filter-tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--line);
+  }
+
+  /* Projects list modifications */
+  .projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .entry-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .entry-cat {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .empty-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border: 1.5px dashed var(--line);
+    padding: 30px;
+    background: transparent;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const projectEntries = document.querySelectorAll('.entry');
+  const emptyPlaceholder = document.getElementById('empty-projects-placeholder');
+  const projectCountSpan = document.getElementById('project-count');
+
+  function applyFilter(category) {
+    filterTabs.forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.filter === category);
+    });
+
+    let visibleCount = 0;
+    projectEntries.forEach((entry) => {
+      const match = category === 'all' || entry.dataset.category === category;
+      entry.hidden = !match;
+      if (match) visibleCount++;
+    });
+
+    if (projectCountSpan) {
+      projectCountSpan.textContent = `${visibleCount} project${visibleCount === 1 ? '' : 's'}`;
+    }
+
+    if (emptyPlaceholder) {
+      emptyPlaceholder.hidden = visibleCount > 0;
+    }
+  }
+
+  filterTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const filter = tab.dataset.filter;
+      if (filter) applyFilter(filter);
+    });
+  });
+</script>

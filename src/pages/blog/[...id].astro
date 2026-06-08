@@ -64,7 +64,132 @@ const fmtDate = (d: Date) =>
             </li>
           ))}
         </ol>
+
+        <!-- Interactive Verifier Console -->
+        <div class="verifier-box">
+          <div class="verifier-header">
+            <span>INTEGRITY VERIFIER console</span>
+          </div>
+          <div class="verifier-body">
+            <p class="verifier-intro">Verify that the text on this page matches the immutable blockchain record in real-time:</p>
+            <div class="verifier-console">
+              <div class="cmd-line">$ sha256sum post.md</div>
+              <div id="verifier-output" class="verifier-output">Calculating...</div>
+            </div>
+            <textarea id="verifier-editor" class="verifier-editor" rows="6" aria-label="Editable post content for verification"></textarea>
+            <p class="verifier-tip">💡 <strong>Try editing the text above!</strong> As you type, the system will re-calculate the SHA-256 hash. If you change even one character, the hash changes and the status turns red, proving the post was not altered.</p>
+          </div>
+        </div>
+        <script type="text/plain" id="raw-content">{entry.body}</script>
+        <script define:vars={{ expectedHash: proofs[0]?.hash }}>
+          const rawText = document.getElementById('raw-content').textContent.replace(/\r\n/g, '\n').trim();
+          const editor = document.getElementById('verifier-editor');
+          const output = document.getElementById('verifier-output');
+
+          if (editor) {
+            editor.value = rawText;
+          }
+
+          async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message.replace(/\r\n/g, '\n').trim());
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+          }
+
+          async function verify() {
+            if (!editor || !output) return;
+            const currentText = editor.value;
+            const currentHash = await sha256(currentText);
+            
+            const isMatch = currentHash === expectedHash;
+            
+            output.className = 'verifier-output ' + (isMatch ? 'verified' : 'modified');
+            output.innerHTML = `Hash: ${currentHash}\nStatus: ${
+              isMatch 
+                ? '✅ VERIFIED (Matches transaction note)' 
+                : '❌ MODIFIED (Does not match block record!)'
+            }`;
+          }
+
+          editor?.addEventListener('input', verify);
+          verify();
+        </script>
       </div>
     )}
   </section>
 </PageLayout>
+
+<style>
+  .verifier-box {
+    margin-top: 28px;
+    border: 1.5px solid var(--line);
+    background: var(--card-soft);
+    border-radius: var(--radius);
+  }
+  .verifier-header {
+    background: var(--line);
+    color: var(--bg);
+    padding: 6px 12px;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .verifier-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .verifier-intro {
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+  .verifier-console {
+    background: var(--line);
+    color: var(--bg);
+    font-family: var(--font);
+    padding: 12px;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border: 1.5px solid var(--line);
+  }
+  .cmd-line {
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+    font-size: 12px;
+    user-select: none;
+  }
+  :global(.verifier-output.verified) {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  :global(.verifier-output.modified) {
+    color: #b83b5e;
+    font-weight: 600;
+  }
+  .verifier-editor {
+    width: 100%;
+    font-family: var(--font);
+    font-size: 13.5px;
+    border: 1.5px solid var(--line);
+    padding: 10px;
+    background: var(--card);
+    color: var(--ink);
+    resize: vertical;
+    border-radius: var(--radius-sm);
+  }
+  .verifier-editor:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+  .verifier-tip {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+</style>

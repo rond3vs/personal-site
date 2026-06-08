@@ -7,7 +7,7 @@ const posts = (await getCollection('blog'))
   .filter((post) => import.meta.env.DEV || !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const categories = ['Lessons', 'Hunches', 'Strays'] as const;
+const categories = ['Lessons', 'Hunches', 'Rants'] as const;
 const filters = [
   { label: 'All', value: 'all', count: posts.length },
   ...categories.map((c) => ({

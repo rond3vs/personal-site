@@ -1,0 +1,578 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+
+const items = await getCollection('my5');
+
+const tiers = [
+  { key: 'Favorite', title: '❤️ Favorite', description: 'Personal favorites that I hold close to my heart.' },
+  { key: 'Underrated', title: '🔍 Underrated', description: 'Hidden gems. People are sleeping on these.' },
+];
+
+const categories = ['Show', 'Movie', 'Anime', 'Cartoon', 'Book', 'Game', 'Music', 'Podcast', 'Software', 'Stationery', 'Food', 'Brand', 'Gadget', 'Meme', 'Misc'];
+
+const hasTier = (item: any, tierKey: string) => {
+  const t = item.data.tier;
+  return Array.isArray(t) ? t.includes(tierKey) : t === tierKey;
+};
+---
+
+<PageLayout title="My 5 — LaRon" back="/" backLabel="← Back">
+  <section class="hero hero--my5">
+    <span class="app-ico app-ico--my5">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3l2.2 5.5L20 10l-4.5 3.4L17 19l-5-3-5 3 1.5-5.6L4 10l5.8-1.5z"/>
+      </svg>
+    </span>
+    <span class="hero-eyebrow">Favorites directory</span>
+    <h1>My 5</h1>
+    <p>My top 5 absolute favorites, underrated gems, overrated media, and GOATED masterworks.</p>
+  </section>
+
+  <!-- View Switcher -->
+  <section class="section toggle-section">
+    <span class="toggle-title">// Layout Mode:</span>
+    <div class="toggle-tabs">
+      <button class="toggle-tab active" data-view="tier">🏆 Group by Tier</button>
+      <button class="toggle-tab" data-view="category">📁 Group by Category</button>
+    </div>
+  </section>
+
+  <!-- View Mode 1: By Tier Grouping -->
+  <div id="view-by-tier-container">
+    <!-- Filter Bar -->
+    <section class="section filter-section">
+      <span class="filter-title">// Filter directory:</span>
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">All (Overall Top 5)</button>
+        {categories.map((c) => (
+          <button class="filter-tab" data-filter={c}>{c}s</button>
+        ))}
+      </div>
+    </section>
+
+    <!-- Tiers Grid -->
+    <div class="my5-grid">
+      {tiers.map((tier) => {
+        // 1. Overall items (those that have overallRank defined)
+        const overallItems = items
+          .filter((item) => hasTier(item, tier.key) && item.data.overallRank !== undefined)
+          .sort((a, b) => (a.data.overallRank || 99) - (b.data.overallRank || 99));
+
+        // 2. All items in the tier (for category-specific lists)
+        const categoryItems = items
+          .filter((item) => hasTier(item, tier.key))
+          .sort((a, b) => a.data.rank - b.data.rank);
+
+        return (
+          <section class="card tier-card" data-tier={tier.key}>
+            <div class="tier-header">
+              <h2>{tier.title}</h2>
+              <p class="tier-desc">{tier.description}</p>
+            </div>
+            
+            <div class="tier-list">
+              
+              <!-- List Mode 1: Overall Top 5 (Shown by default) -->
+              <div class="list-group list-group--overall">
+                {overallItems.map((item) => (
+                  <div class="my5-item" data-overall-rank={item.data.overallRank}>
+                    <div class="item-header">
+                      <span class="item-rank">Overall #{item.data.overallRank}</span>
+                      <span class="item-cat">// {item.data.category}</span>
+                    </div>
+                    <div class="item-body">
+                      <h3>
+                        {item.data.url ? (
+                          <a href={item.data.url} target="_blank" rel="noopener">
+                            {item.data.title} <span class="arrow">↗</span>
+                          </a>
+                        ) : (
+                          item.data.title
+                        )}
+                      </h3>
+                      <p>{item.data.description}</p>
+                    </div>
+                  </div>
+                ))}
+                
+                {overallItems.length === 0 && (
+                  <div class="empty-placeholder">[ No overall entries in this tier ]</div>
+                )}
+              </div>
+
+              <!-- List Mode 2: Category Specific lists (Hidden by default, shown when filtering) -->
+              <div class="list-group list-group--category" hidden>
+                {categoryItems.map((item) => (
+                  <div class="my5-item" data-category={item.data.category} data-rank={item.data.rank} hidden>
+                    <div class="item-header">
+                      <span class="item-rank">{item.data.category} #{item.data.rank}</span>
+                      <span class="item-cat">// {item.data.category}</span>
+                    </div>
+                    <div class="item-body">
+                      <h3>
+                        {item.data.url ? (
+                          <a href={item.data.url} target="_blank" rel="noopener">
+                            {item.data.title} <span class="arrow">↗</span>
+                          </a>
+                        ) : (
+                          item.data.title
+                        )}
+                      </h3>
+                      <p>{item.data.description}</p>
+                    </div>
+                  </div>
+                ))}
+                <div class="empty-filter-placeholder" hidden>[ No entries in this category ]</div>
+              </div>
+
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+
+  <!-- View Mode 2: By Category Grouping -->
+  <div id="view-by-category-container" hidden>
+    <div class="category-grid">
+      {categories.map((category) => {
+        const categoryItems = items.filter((item) => item.data.category === category);
+        const categoryHasItems = categoryItems.length > 0;
+        
+        return (
+          <section class="card category-card" data-category={category}>
+            <div class="category-header">
+              <h2>📁 {category}s</h2>
+              <p class="category-desc">Ranked favorites under {category.toLowerCase()}s</p>
+            </div>
+            
+            <div class="category-items-container">
+              {categoryHasItems ? (
+                tiers.map((tier) => {
+                  const tierItems = categoryItems
+                    .filter((item) => hasTier(item, tier.key))
+                    .sort((a, b) => a.data.rank - b.data.rank);
+                    
+                  if (tierItems.length === 0) return null;
+                  
+                  return (
+                    <div class="cat-tier-group">
+                      <div class="cat-tier-label">{tier.title}</div>
+                      <div class="cat-tier-list">
+                        {tierItems.map((item) => (
+                          <div class="cat-item">
+                            <div class="cat-item-top">
+                              <span class="cat-item-rank">Rank #{item.data.rank}</span>
+                            </div>
+                            <div class="cat-item-body">
+                              <h3>
+                                {item.data.url ? (
+                                  <a href={item.data.url} target="_blank" rel="noopener">
+                                    {item.data.title} <span class="arrow">↗</span>
+                                  </a>
+                                ) : (
+                                  item.data.title
+                                )}
+                              </h3>
+                              <p>{item.data.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div class="empty-category-placeholder">
+                  [ No {category.toLowerCase()} entries in directory ]
+                </div>
+              )}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  </div>
+</PageLayout>
+
+<style>
+  /* Toggle switcher bar styling */
+  .toggle-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 22px;
+    margin-bottom: var(--gap);
+  }
+  .toggle-title {
+    font-size: 13.5px;
+    font-weight: bold;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .toggle-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .toggle-tab {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border: 1.5px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .toggle-tab:hover {
+    background: var(--card-soft);
+  }
+  .toggle-tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--line);
+  }
+
+  /* Filter section styling */
+  .filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 22px;
+    margin-bottom: var(--gap);
+  }
+  .filter-title {
+    font-size: 13.5px;
+    font-weight: bold;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .filter-tab {
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 12px;
+    border: 1.5px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .filter-tab:hover {
+    background: var(--card-soft);
+  }
+  .filter-tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--line);
+  }
+
+  /* Grid layout */
+  .my5-grid,
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+  }
+
+  @media (min-width: 900px) {
+    .my5-grid,
+    .category-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  /* Tier Card styling */
+  .tier-card,
+  .category-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 250px;
+  }
+  .tier-header,
+  .category-header {
+    border-bottom: 1px solid #ececec;
+    padding-bottom: 12px;
+  }
+  .tier-header h2,
+  .category-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .tier-desc,
+  .category-desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* List groups and items */
+  .tier-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .list-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    flex: 1;
+  }
+  .my5-item {
+    padding: 14px;
+    border: 1.5px solid var(--line);
+    background: var(--card-soft);
+    border-radius: var(--radius-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .my5-item:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--line);
+  }
+  .item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12.5px;
+    font-weight: bold;
+  }
+  .item-rank {
+    color: var(--accent);
+    background: rgba(32, 106, 93, 0.08);
+    padding: 2px 6px;
+    border: 1px solid var(--line);
+  }
+  .item-cat {
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .item-body h3 {
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .item-body h3 a:hover {
+    color: var(--accent);
+  }
+  .item-body h3 a .arrow {
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  .item-body h3 a:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+  .item-body p {
+    font-size: 14.5px;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  /* Category Item styling */
+  .category-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    flex: 1;
+  }
+  .cat-tier-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-left: 3px solid var(--accent);
+    padding-left: 12px;
+  }
+  .cat-tier-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+  }
+  .cat-tier-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cat-item {
+    background: var(--card-soft);
+    border: 1px solid var(--line);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cat-item-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cat-item-rank {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--accent);
+    background: rgba(32, 106, 93, 0.08);
+    padding: 1px 5px;
+    border: 1px solid var(--line);
+  }
+  .cat-item-body h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 2px 0;
+  }
+  .cat-item-body h3 a:hover {
+    color: var(--accent);
+  }
+  .cat-item-body h3 a .arrow {
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  .cat-item-body h3 a:hover .arrow {
+    transform: translate(2px, -2px);
+  }
+  .cat-item-body p {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .empty-placeholder,
+  .empty-filter-placeholder,
+  .empty-category-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border: 1.5px dashed var(--line);
+    border-radius: var(--radius-sm);
+    padding: 24px;
+    background: transparent;
+    text-align: center;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+</style>
+
+<script is:inline>
+  // View Toggle Logic
+  const viewTabs = document.querySelectorAll('.toggle-tab');
+  const viewByTierContainer = document.getElementById('view-by-tier-container');
+  const viewByCategoryContainer = document.getElementById('view-by-category-container');
+
+  function switchView(view) {
+    console.log('Switching view to:', view);
+    viewTabs.forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.view === view);
+    });
+
+    if (view === 'tier') {
+      viewByTierContainer?.removeAttribute('hidden');
+      viewByCategoryContainer?.setAttribute('hidden', '');
+    } else {
+      viewByTierContainer?.setAttribute('hidden', '');
+      viewByCategoryContainer?.removeAttribute('hidden');
+    }
+  }
+
+  viewTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const view = tab.dataset.view;
+      if (view) switchView(view);
+    });
+  });
+
+  // Category Filtering Logic (for "By Tier" view)
+  const filterTabs = document.querySelectorAll('.filter-tab');
+  const cards = document.querySelectorAll('.tier-card');
+
+  function applyFilter(category) {
+    console.log('Applying filter for category:', category);
+    console.log('Total tier cards found:', cards.length);
+
+    // 1. Update active tab styling
+    filterTabs.forEach((tab) => {
+      tab.classList.toggle('active', tab.dataset.filter === category);
+    });
+
+    // 2. Adjust visibility within each tier card
+    cards.forEach((card) => {
+      const tierName = card.dataset.tier;
+      const overallGroup = card.querySelector('.list-group--overall');
+      const categoryGroup = card.querySelector('.list-group--category');
+      const filterPlaceholder = card.querySelector('.empty-filter-placeholder');
+
+      console.log(`Checking tier card [${tierName}]:`, {
+        overallGroupExists: !!overallGroup,
+        categoryGroupExists: !!categoryGroup,
+        placeholderExists: !!filterPlaceholder
+      });
+
+      if (!overallGroup || !categoryGroup) return;
+
+      console.log(`Tier card [${tierName}] categoryGroup HTML:`, categoryGroup.innerHTML);
+
+      if (category === 'all') {
+        overallGroup.hidden = false;
+        categoryGroup.hidden = true;
+        if (filterPlaceholder) filterPlaceholder.hidden = true;
+      } else {
+        overallGroup.hidden = true;
+        categoryGroup.hidden = false;
+
+        // Toggle visibility of items inside the category list group
+        const items = categoryGroup.querySelectorAll('.my5-item');
+        let visibleCount = 0;
+        
+        console.log(`Tier card [${tierName}] category items count:`, items.length);
+
+        items.forEach((item) => {
+          const itemCat = item.dataset.category;
+          const match = itemCat === category;
+          item.hidden = !match;
+          if (match) {
+            visibleCount++;
+            console.log(`-> MATCH FOUND [${item.querySelector('h3')?.textContent?.trim()}]: item category = ${itemCat}, filter = ${category}`);
+          }
+        });
+
+        console.log(`Tier card [${tierName}] visibleCount after filter:`, visibleCount);
+
+        // Toggle the empty message if no items matched this category filter
+        if (filterPlaceholder) {
+          filterPlaceholder.hidden = visibleCount > 0;
+        }
+      }
+    });
+  }
+
+  filterTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const filter = tab.dataset.filter;
+      if (filter) {
+        try {
+          applyFilter(filter);
+        } catch (err) {
+          console.error('Error applying filter:', err);
+        }
+      }
+    });
+  });
+</script>

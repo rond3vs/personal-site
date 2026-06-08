@@ -3,6 +3,7 @@ title: TO_DO_ME
 description: Portfolio and blog built with Astro.
 date: 2026-01-01
 tag: Astro
+category: App
 ---
 
 A portfolio and blog built with [Astro](https://astro.build) — a place to

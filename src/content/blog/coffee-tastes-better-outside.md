@@ -2,7 +2,7 @@
 title: Coffee Tastes Better Outside
 description: No data. Just a feeling.
 date: 2026-01-22
-category: Strays
+category: Rants
 draft: false
 ---
 

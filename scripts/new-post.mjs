@@ -26,12 +26,12 @@ if (existsSync(file)) {
 
 const today = new Date().toISOString().slice(0, 10);
 
-// category options: Lessons | Hunches | Strays
+// category options: Lessons | Hunches | Rants
 const post = `---
 title: ${title}
 description:
 date: ${today}
-category: Strays
+category: Rants
 draft: true
 ---
 
@@ -42,6 +42,6 @@ mkdirSync(dir, { recursive: true });
 writeFileSync(file, post);
 
 console.log(`\n✅ Created ${file}`);
-console.log(`   - fill in "description" and pick a category (Lessons | Hunches | Strays)`);
+console.log(`   - fill in "description" and pick a category (Lessons | Hunches | Rants)`);
 console.log(`   - it's a draft (hidden live, visible in npm run dev)`);
 console.log(`   - set draft: false when ready, then optionally: npm run stamp -- ${slug}\n`);

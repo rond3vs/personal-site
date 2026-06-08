@@ -11,6 +11,7 @@ const projects = defineCollection({
     date: z.coerce.date().optional(),
     tag: z.string().optional(),
     url: z.string().url().optional(),
+    category: z.enum(['App', 'Website', 'Music', 'Video', 'Coding']).default('Coding'),
   }),
 });
 
@@ -23,8 +24,8 @@ const blog = defineCollection({
     date: z.coerce.date(),
     draft: z.boolean().optional(),
     url: z.string().url().optional(),
-    // Lessons — life lessons learned · Hunches — bets on the future · Strays — random thoughts
-    category: z.enum(['Lessons', 'Hunches', 'Strays']).default('Strays'),
+    // Lessons — life lessons learned · Hunches — bets on the future · Rants — random thoughts
+    category: z.enum(['Lessons', 'Hunches', 'Rants']).default('Rants'),
     // Append-only timestamp history. Each `npm run stamp -- <post>` adds an entry
     // (newest first): the sha256 of the body at that moment + its Algorand txn.
     // Old entries are never removed, so the edit trail stays verifiable.
@@ -52,15 +53,21 @@ const businesses = defineCollection({
   }),
 });
 
-// Currently into — products, tools & things I'm using / playing / watching now
-const currently = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/currently' }),
+// My 5 — curated lists of my 5 favorite, underrated, overrated & goated items
+const my5 = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/my5' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
-    category: z.string().optional(),   // e.g. Using, Playing, Collecting, Watching
+    category: z.enum(['Show', 'Movie', 'Anime', 'Cartoon', 'Gadget', 'Meme', 'Misc', 'Music', 'Stationery', 'Food', 'Book', 'Game', 'Podcast', 'Software', 'Brand']),
+    tier: z.union([
+      z.enum(['Favorite', 'Underrated']),
+      z.array(z.enum(['Favorite', 'Underrated']))
+    ]),
     url: z.string().url().optional(),
+    rank: z.number().min(1).max(5),
+    overallRank: z.number().min(1).max(5).optional(),
   }),
 });
 
-export const collections = { projects, blog, businesses, currently };
+export const collections = { projects, blog, businesses, my5 };

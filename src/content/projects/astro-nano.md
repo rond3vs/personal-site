@@ -3,6 +3,7 @@ title: Astro Nano
 description: Minimal portfolio and blog built with Astro and no frameworks.
 date: 2026-01-01
 tag: Astro
+category: Website
 ---
 
 A minimal portfolio and blog built with [Astro](https://astro.build) and no

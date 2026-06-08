@@ -2,7 +2,7 @@
 title: Journey to CPA
 description: I sat on the Becker course for almost a year. Now I've got 30 days to pass FAR.
 date: 2026-06-01
-category: Strays
+category: Rants
 draft: false
 proofs:
   - date: 2026-06-01

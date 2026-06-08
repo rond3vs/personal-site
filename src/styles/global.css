@@ -70,7 +70,7 @@ svg { display: block; }
 .card,
 .section,
 .hero,
-.apps-grid > .app,
+.console-grid > .app,
 .now-card {
   border: 1px solid var(--line);
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
@@ -99,8 +99,8 @@ svg { display: block; }
   gap: 10px;
 }
 
-.bar--apps { font-weight: 500; font-size: 15px; }
-.apps-mark { display: grid; place-items: center; width: 30px; height: 30px; }
+.bar--console { font-weight: 500; font-size: 15px; }
+.console-mark { display: grid; place-items: center; width: 30px; height: 30px; }
 
 /* ---- brand mark ---- */
 .brand {
@@ -334,24 +334,24 @@ svg { display: block; }
 .contact-links a:hover { color: var(--accent); }
 .contact-foot { color: var(--ink-soft); font-size: 14px; margin-top: auto; }
 
-/* ---- apps launcher ---- */
-.apps-grid {
+/* ---- console launcher ---- */
+.console-grid {
   display: grid;
   gap: var(--gap);
   grid-template-columns: 1fr 1fr;
   grid-template-areas:
     "projects blog"
     "business business"
-    "current  current";
-  grid-template-rows: 1fr 1.25fr 1fr;
-  height: 100%;
+    "my5      my5";
+  grid-template-rows: auto auto auto;
+  padding-bottom: 12px;
 }
 .app--projects { grid-area: projects; }
 .app--blog     { grid-area: blog; }
 .app--business { grid-area: business; }
-.app--current  { grid-area: current; }
+.app--my5      { grid-area: my5; }
 
-.apps-grid > .app {
+.console-grid > .app {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -364,11 +364,11 @@ svg { display: block; }
   border-radius: var(--radius);
   transition: transform .12s ease, box-shadow .12s ease;
 }
-.apps-grid > .app:hover {
+.console-grid > .app:hover {
   transform: translate(-2px, -2px);
   box-shadow: 5px 5px 0 var(--line);   /* hard offset shadow on hover */
 }
-.apps-grid > .app:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink); }
+.console-grid > .app:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink); }
 
 /* app icons: bordered box with a text glyph (the svg is hidden) */
 .app-ico {
@@ -385,7 +385,8 @@ svg { display: block; }
 .app-ico--projects::before { content: "#"; }
 .app-ico--blog::before     { content: "\00B6"; }   /* ¶ */
 .app-ico--about::before    { content: "@"; }
-.app-ico--current::before  { content: "*"; }
+.app-ico--my5::before      { content: "*"; }
+.app-ico--business::before { content: "$"; }
 
 .app-meta { display: flex; flex-direction: column; gap: 3px; }
 .app-eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; opacity: .7; }
@@ -406,21 +407,7 @@ svg { display: block; }
 }
 .app-arrow::before { content: "->"; font-size: 16px; letter-spacing: -1px; }
 
-/* featured tile (Businesses) — inverted dark block.
-   It has no flow icon, so push its text to the bottom; that keeps it
-   clear of the [ $ ] marker (top-left) and the arrow (top-right). */
-.apps-grid > .app--feature { background: #0a0a0a; color: #fff; justify-content: flex-end; }
-.app--feature .app-sub { color: rgba(255, 255, 255, .6); }
-.app--feature .app-arrow { color: rgba(255, 255, 255, .55); }
-.app--feature:hover .app-arrow { color: #fff; }
-.app--feature::before {
-  content: "[ $ ]";
-  position: absolute;
-  top: 20px; left: 22px;
-  color: var(--accent);
-  font-weight: 700;
-}
-.feature-mark { display: none; }   /* decorative svg replaced by the [ $ ] marker */
+/* featured tile (Businesses) — matches the style of the other apps. */
 
 
 /* ============================================================
@@ -847,8 +834,8 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 ::view-transition-new(vt-business),
 ::view-transition-old(vt-about),
 ::view-transition-new(vt-about),
-::view-transition-old(vt-current),
-::view-transition-new(vt-current) {
+::view-transition-old(vt-my5),
+::view-transition-new(vt-my5) {
   mix-blend-mode: normal;
 }
 
@@ -856,7 +843,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 ::view-transition-new(vt-blog),
 ::view-transition-new(vt-business),
 ::view-transition-new(vt-about),
-::view-transition-new(vt-current) {
+::view-transition-new(vt-my5) {
   animation: vt-card-lock .14s cubic-bezier(.2, 1, .3, 1) both;
 }
 
@@ -880,7 +867,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
 }
 
 @media (max-width: 859px) {
-  .app:has(#view-info:checked) .panel--apps {
+  .app:has(#view-info:checked) .panel--console {
     animation: vt-panel-snap .14s .02s cubic-bezier(.2, 1, .3, 1) both;
   }
 }
@@ -894,7 +881,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
-    clip-path: inset(0);
+    clip-path: none;
   }
 }
 
@@ -910,7 +897,7 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .app--blog,     .hero--blog     { view-transition-name: vt-blog; }
   .app--business, .hero--business { view-transition-name: vt-business; }
   .card--more,    .hero--about    { view-transition-name: vt-about; }
-  .app--current,  .hero--current  { view-transition-name: vt-current; }
+  .app--my5,      .hero--my5      { view-transition-name: vt-my5; }
 }
 */
 
@@ -956,26 +943,40 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .tab .ico::before { width: 11px; }
   .tab .ico::after  { height: 11px; }
 
-  /* the Apps bar + contact footer don't show on the mobile home */
-  .bar--apps { display: none; }
+  /* the Console bar shows on mobile too! we override its height to make it a sleek status ribbon */
+  .bar--console {
+    display: flex;
+    height: 40px;
+    padding: 0 10px;
+  }
+  .bar--console .console-mark,
+  .bar--console .console-title-text {
+    display: none;
+  }
+  .bar--console .live-status-bar {
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
   .card--foot { display: none; }
 
   /* show only the panels for the active view */
   .panel { display: none; }
   .app:has(#view-info:checked)    .panel--info,
-  .app:has(#view-info:checked)    .panel--apps,
+  .app:has(#view-info:checked)    .panel--console,
   .app:has(#view-contact:checked) .panel--contact { display: flex; }
 
   /* even 2-column launcher; cards size to content (a touch larger),
      no inner scroll — the whole page scrolls if everything doesn't fit */
-  .apps-grid {
+  .console-grid {
     flex: 1;                       /* fill the panel width */
     grid-template-columns: 1fr 1fr;
     grid-template-areas: none;
     grid-template-rows: none;
     grid-auto-rows: minmax(170px, auto);
   }
-  .apps-grid > .app {
+  .console-grid > .app {
     grid-area: auto;
     grid-column: auto;
     min-height: 170px;
@@ -1006,7 +1007,6 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
   .app-title { font-size: 17px; }
   .app-sub { font-size: 13px; }
   .app-arrow { top: 14px; right: 16px; }
-  .app--feature::before { top: 14px; left: 16px; }
 
   /* detail pages */
   .page-shell { padding: 10px; }
@@ -1033,17 +1033,17 @@ a.now-card:hover .app-arrow { transform: translate(2px, -2px); color: var(--ink)
     grid-template-columns: minmax(360px, 36%) 1fr;
     grid-template-rows: var(--bar-h) 1fr;
     grid-template-areas:
-      "barmain barapps"
-      "left    apps";
+      "barmain barconsole"
+      "left    console";
     height: 100vh;
   }
   .bar--main { grid-area: barmain; }
-  .bar--apps { grid-area: barapps; }
+  .bar--console { grid-area: barconsole; }
 
-  /* left column shows Info OR Contact; apps column is always visible */
+  /* left column shows Info OR Contact; console column is always visible */
   .panel--info,
-  .panel--contact { grid-area: left; overflow-y: auto; }
-  .panel--apps { grid-area: apps; overflow-y: auto; display: block; }
+  .panel--contact { grid-area: left; overflow-y: auto; padding-top: 8px; padding-bottom: 12px; }
+  .panel--console { grid-area: console; overflow-y: auto; display: block; padding-top: 8px; }
 
   .app:has(#view-info:checked)    .panel--contact { display: none; }
   .app:has(#view-contact:checked) .panel--info    { display: none; }
