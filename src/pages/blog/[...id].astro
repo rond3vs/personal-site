@@ -40,55 +40,64 @@ const fmtDate = (d: Date) =>
     <div class="prose"><Content /></div>
 
     {proofs.length > 0 && (
-      <div class="proof">
-        <div class="proof-head">
-          <span class="proof-lock" aria-hidden="true">🔒</span>
-          <strong>Timestamped on Algorand</strong>
+      <aside class="proof" id="post-proof" aria-labelledby="proof-title">
+        <div class="proof-main">
+          <span class="proof-mark" aria-hidden="true">✓</span>
+          <div class="proof-copy">
+            <strong id="proof-title">Timestamped on Algorand</strong>
+            <p id="proof-status" aria-live="polite">Checking this post against its blockchain record…</p>
+          </div>
+          <a
+            class="proof-link"
+            href={`https://allo.info/tx/${proofs[0].txn}`}
+            target="_blank"
+            rel="noopener"
+          >
+            View proof <span aria-hidden="true">↗</span>
+          </a>
         </div>
-        <p class="proof-blurb">
-          {proofs.length === 1
-            ? 'This text was locked onto the blockchain — unedited since.'
-            : `Locked onto the blockchain ${proofs.length} times. The latest attests the current text; earlier stamps cover prior versions (their text is in this site's git history).`}
-        </p>
-        <ol class="proof-list">
-          {proofs.map((p, i) => (
-            <li>
-              <span class="proof-when">
-                {fmtDate(p.date)}
-                {i === 0 ? <span class="proof-tag">current</span> : null}
-              </span>
-              <a href={`https://allo.info/tx/${p.txn}`} target="_blank" rel="noopener">
-                view on-chain ↗
-              </a>
-              <code>sha256: {p.hash}</code>
-            </li>
-          ))}
-        </ol>
 
-        <!-- Interactive Verifier Console -->
-        <div class="verifier-box">
-          <div class="verifier-header">
-            <span>INTEGRITY VERIFIER console</span>
+        <details class="proof-details">
+          <summary>Technical details</summary>
+          <div class="proof-meta">
+            {proofs.map((p, i) => (
+              <div class="proof-record">
+                {proofs.length > 1 && (
+                  <strong>{i === 0 ? 'Current version' : `Earlier version · ${fmtDate(p.date)}`}</strong>
+                )}
+                <dl>
+                  <div>
+                    <dt>Date</dt>
+                    <dd>{fmtDate(p.date)}</dd>
+                  </div>
+                  <div>
+                    <dt>Transaction</dt>
+                    <dd>
+                      <a href={`https://allo.info/tx/${p.txn}`} target="_blank" rel="noopener">
+                        {p.txn.slice(0, 10)}…{p.txn.slice(-8)}
+                      </a>
+                    </dd>
+                  </div>
+                  <div class="proof-hash">
+                    <dt>SHA-256</dt>
+                    <dd><code>{p.hash}</code></dd>
+                  </div>
+                </dl>
+              </div>
+            ))}
+            <p class="proof-note">
+              SHA-256 creates a fingerprint of the post. Changing even one character creates a
+              different fingerprint.
+            </p>
           </div>
-          <div class="verifier-body">
-            <p class="verifier-intro">Verify that the text on this page matches the immutable blockchain record in real-time:</p>
-            <div class="verifier-console">
-              <div class="cmd-line">$ sha256sum post.md</div>
-              <div id="verifier-output" class="verifier-output">Calculating...</div>
-            </div>
-            <textarea id="verifier-editor" class="verifier-editor" rows="6" aria-label="Editable post content for verification"></textarea>
-            <p class="verifier-tip">💡 <strong>Try editing the text above!</strong> As you type, the system will re-calculate the SHA-256 hash. If you change even one character, the hash changes and the status turns red, proving the post was not altered.</p>
-          </div>
-        </div>
+        </details>
+
         <script type="text/plain" id="raw-content">{entry.body}</script>
-        <script define:vars={{ expectedHash: proofs[0]?.hash }}>
+        <script define:vars={{ expectedHash: proofs[0]?.hash, proofDate: fmtDate(proofs[0].date) }}>
           const rawText = document.getElementById('raw-content').textContent.replace(/\r\n/g, '\n').trim();
-          const editor = document.getElementById('verifier-editor');
-          const output = document.getElementById('verifier-output');
-
-          if (editor) {
-            editor.value = rawText;
-          }
+          const proof = document.getElementById('post-proof');
+          const title = document.getElementById('proof-title');
+          const status = document.getElementById('proof-status');
 
           async function sha256(message) {
             const msgBuffer = new TextEncoder().encode(message.replace(/\r\n/g, '\n').trim());
@@ -98,98 +107,154 @@ const fmtDate = (d: Date) =>
           }
 
           async function verify() {
-            if (!editor || !output) return;
-            const currentText = editor.value;
-            const currentHash = await sha256(currentText);
-            
-            const isMatch = currentHash === expectedHash;
-            
-            output.className = 'verifier-output ' + (isMatch ? 'verified' : 'modified');
-            output.innerHTML = `Hash: ${currentHash}\nStatus: ${
-              isMatch 
-                ? '✅ VERIFIED (Matches transaction note)' 
-                : '❌ MODIFIED (Does not match block record!)'
-            }`;
+            if (!proof || !title || !status) return;
+
+            try {
+              const currentHash = await sha256(rawText);
+              const isMatch = currentHash === expectedHash;
+
+              proof.classList.add(isMatch ? 'proof--verified' : 'proof--modified');
+              title.textContent = isMatch ? 'Verified on Algorand' : 'Verification failed';
+              status.textContent = isMatch
+                ? `This post matches its ${proofDate} blockchain timestamp.`
+                : 'This page no longer matches the saved blockchain fingerprint.';
+            } catch {
+              title.textContent = 'Timestamped on Algorand';
+              status.textContent = 'This browser could not check the post automatically.';
+            }
           }
 
-          editor?.addEventListener('input', verify);
           verify();
         </script>
-      </div>
+      </aside>
     )}
   </section>
 </PageLayout>
 
 <style>
-  .verifier-box {
-    margin-top: 28px;
-    border: 1.5px solid var(--line);
+  .proof {
+    max-width: 62ch;
+    margin-top: 32px;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 1px solid #dedede;
+    background: transparent;
+    color: var(--ink);
+  }
+  .proof-main {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .proof-mark {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--ink-soft);
     background: var(--card-soft);
-    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 700;
   }
-  .verifier-header {
-    background: var(--line);
-    color: var(--bg);
-    padding: 6px 12px;
-    font-weight: bold;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .verifier-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .verifier-intro {
-    font-size: 14.5px;
-    color: var(--ink);
-  }
-  .verifier-console {
-    background: var(--line);
-    color: var(--bg);
-    font-family: var(--font);
-    padding: 12px;
-    border-radius: 3px;
-    font-size: 13px;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-all;
-    border: 1.5px solid var(--line);
-  }
-  .cmd-line {
-    color: var(--ink-soft);
-    margin-bottom: 4px;
-    font-size: 12px;
-    user-select: none;
-  }
-  :global(.verifier-output.verified) {
-    color: var(--accent);
-    font-weight: 600;
-  }
-  :global(.verifier-output.modified) {
-    color: #b83b5e;
-    font-weight: 600;
-  }
-  .verifier-editor {
-    width: 100%;
-    font-family: var(--font);
+  .proof-copy strong {
+    display: block;
     font-size: 13.5px;
-    border: 1.5px solid var(--line);
-    padding: 10px;
-    background: var(--card);
+  }
+  .proof-copy p {
+    margin-top: 2px;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+  .proof-link {
+    color: var(--accent);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .proof-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  :global(.proof--verified) .proof-mark {
+    color: var(--accent);
+    background: rgba(32, 106, 93, .1);
+  }
+  :global(.proof--modified) .proof-mark {
+    color: #a33a4d;
+    background: rgba(163, 58, 77, .1);
+  }
+  .proof-details {
+    margin: 10px 0 0 38px;
+  }
+  .proof-details summary {
+    width: max-content;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .proof-details summary:hover {
     color: var(--ink);
-    resize: vertical;
-    border-radius: var(--radius-sm);
   }
-  .verifier-editor:focus {
-    outline: 2px solid var(--accent);
-    outline-offset: -1px;
+  .proof-meta {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #dedede;
+    background: var(--card-soft);
+    font-size: 12px;
   }
-  .verifier-tip {
-    font-size: 13px;
+  .proof-record + .proof-record {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #dedede;
+  }
+  .proof-record > strong {
+    display: block;
+    margin-bottom: 8px;
+  }
+  .proof-record dl {
+    display: grid;
+    gap: 7px;
+  }
+  .proof-record dl > div {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 10px;
+  }
+  .proof-record dt {
+    color: var(--ink-soft);
+  }
+  .proof-record a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .proof-hash code {
+    word-break: break-all;
+  }
+  .proof-note {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #dedede;
     color: var(--ink-soft);
     line-height: 1.5;
+  }
+  @media (max-width: 560px) {
+    .proof-main {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .proof-link {
+      grid-column: 2;
+      justify-self: start;
+    }
+    .proof-details {
+      margin-left: 38px;
+    }
+    .proof-record dl > div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
   }
 </style>
