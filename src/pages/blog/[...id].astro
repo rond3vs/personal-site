@@ -92,9 +92,14 @@ const fmtDate = (d: Date) =>
           </div>
         </details>
 
-        <script type="text/plain" id="raw-content">{entry.body}</script>
-        <script define:vars={{ expectedHash: proofs[0]?.hash, proofDate: fmtDate(proofs[0].date) }}>
-          const rawText = document.getElementById('raw-content').textContent.replace(/\r\n/g, '\n').trim();
+        <script
+          define:vars={{
+            expectedHash: proofs[0]?.hash,
+            proofDate: fmtDate(proofs[0].date),
+            rawPostBody: entry.body,
+          }}
+        >
+          const rawText = rawPostBody.replace(/\r\n/g, '\n').trim();
           const proof = document.getElementById('post-proof');
           const title = document.getElementById('proof-title');
           const status = document.getElementById('proof-status');
