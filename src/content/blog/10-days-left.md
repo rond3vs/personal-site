@@ -5,7 +5,7 @@ date: 2026-06-20
 category: Rants
 draft: false
 proofs:
-  - date: 2026-06-21
+  - date: 2026-06-20
     hash: 1b2d733d4d2a7e37e1245f2d6b69f7cab3d7d48f5e41975df0a7c8bb06136d74
     txn: SMMUEVOI3CNWCYHV54RKN4PVJASLBPUDDULEFQQ6CLKTFIAL7ZZQ
 ---

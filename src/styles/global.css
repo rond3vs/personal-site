@@ -506,8 +506,20 @@ svg { display: block; }
 .entry-body { flex: 1; min-width: 0; }
 .entry-top { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
 .entry-body h3 { font-size: 19px; font-weight: 600; }
-.entry-date { color: var(--ink-soft); font-size: 14px; white-space: nowrap; }
 .entry-body p { color: var(--ink-soft); font-size: 15.5px; line-height: 1.5; margin-top: 6px; }
+.entry-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+}
+.entry-date {
+  color: var(--ink);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.entry-meta .chips { margin-top: 0; }
 
 .tag {
   display: inline-block;

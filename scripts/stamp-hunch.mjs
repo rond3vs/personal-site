@@ -79,7 +79,20 @@ const result = await algosdk.waitForConfirmation(algod, txid, 4);
 
 // Append a new entry to the `proofs:` list in frontmatter (newest first).
 // Old entries are never removed — the edit trail stays verifiable.
-const today = new Date().toISOString().slice(0, 10);
+// Use the site's Texas timezone instead of UTC so late-night stamps keep the
+// same calendar date the author sees locally.
+const localDate = Object.fromEntries(
+  new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .formatToParts(new Date())
+    .filter(({ type }) => type !== 'literal')
+    .map(({ type, value }) => [type, value])
+);
+const today = `${localDate.year}-${localDate.month}-${localDate.day}`;
 const entry = `  - date: ${today}\n    hash: ${hash}\n    txn: ${txid}`;
 
 const updated = raw.replace(/^(---\n)([\s\S]*?)(\n---\n)/, (_, open, fm, close) => {

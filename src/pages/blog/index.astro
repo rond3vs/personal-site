@@ -7,6 +7,14 @@ const posts = (await getCollection('blog'))
   .filter((post) => import.meta.env.DEV || !post.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
 const categories = ['Lessons', 'Hunches', 'Rants'] as const;
 const filters = [
   { label: 'All', value: 'all', count: posts.length },
@@ -52,15 +60,19 @@ const filters = [
         <div class="entry-body">
           <div class="entry-top">
             <h3>{post.data.title}</h3>
-            <span class="entry-date">{post.data.date.getFullYear()}</span>
           </div>
           <p>{post.data.description}</p>
-          <span class="chips">
-            <span class="cat-chip">{post.data.category}</span>
-            {post.data.proofs?.length ? (
-              <span class="cat-chip cat-chip--stamped">🔒 Stamped</span>
-            ) : null}
-          </span>
+          <div class="entry-meta">
+            <time class="entry-date" datetime={post.data.date.toISOString()}>
+              {formatDate(post.data.date)}
+            </time>
+            <span class="chips">
+              <span class="cat-chip">{post.data.category}</span>
+              {post.data.proofs?.length ? (
+                <span class="cat-chip cat-chip--stamped">🔒 Stamped</span>
+              ) : null}
+            </span>
+          </div>
         </div>
       </a>
     ))}

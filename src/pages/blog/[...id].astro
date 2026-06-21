@@ -11,7 +11,6 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const year = entry.data.date.getFullYear();
 
 // Newest stamp first. The first entry attests the *current* text; older ones
 // are prior versions whose text lives in git history.
@@ -31,7 +30,7 @@ const fmtDate = (d: Date) =>
         <path d="M4 4h12l4 4v12H4z"/><path d="M8 9h6M8 13h8M8 17h5"/>
       </svg>
     </span>
-    <span class="hero-eyebrow">{entry.data.category} · {year}</span>
+    <span class="hero-eyebrow">{entry.data.category} · {fmtDate(entry.data.date)}</span>
     <h1>{entry.data.title}</h1>
     <p>{entry.data.description}</p>
   </section>
