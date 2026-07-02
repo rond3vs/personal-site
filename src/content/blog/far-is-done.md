@@ -1,9 +1,9 @@
 ---
-title: FAR Is Done
+title: "Journey to CPA: FAR Is Done"
 description: I sat for FAR yesterday. It wasn't even the hardest part of the day.
 date: 2026-07-01
 category: Rants
-draft: true
+draft: false
 ---
 
 Yesterday was one of the worst days I've had in a minute.

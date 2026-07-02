@@ -1,5 +1,5 @@
 ---
-title: 10 Days Left
+title: "Journey to CPA: 10 Days Left"
 description: Ten days until FAR, and it’s time to switch up the study strategy.
 date: 2026-06-20
 category: Rants

@@ -1,5 +1,5 @@
 ---
-title: Journey to CPA
+title: "Journey to CPA: 30 Days Out"
 description: I sat on the Becker course for almost a year. Now I've got 30 days to pass FAR.
 date: 2026-06-01
 category: Rants
